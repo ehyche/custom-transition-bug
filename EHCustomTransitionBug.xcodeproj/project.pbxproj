@@ -1,0 +1,455 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		FD75A2671AA8AF12001363DA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = FD75A2661AA8AF12001363DA /* main.m */; };
+		FD75A26A1AA8AF12001363DA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FD75A2691AA8AF12001363DA /* AppDelegate.m */; };
+		FD75A26D1AA8AF12001363DA /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FD75A26C1AA8AF12001363DA /* ViewController.m */; };
+		FD75A2701AA8AF12001363DA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FD75A26E1AA8AF12001363DA /* Main.storyboard */; };
+		FD75A2721AA8AF12001363DA /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FD75A2711AA8AF12001363DA /* Images.xcassets */; };
+		FD75A2751AA8AF12001363DA /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = FD75A2731AA8AF12001363DA /* LaunchScreen.xib */; };
+		FD75A2811AA8AF13001363DA /* EHCustomTransitionBugTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FD75A2801AA8AF13001363DA /* EHCustomTransitionBugTests.m */; };
+		FD75A28C1AA8AFB1001363DA /* EHSolidColorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FD75A28B1AA8AFB1001363DA /* EHSolidColorViewController.m */; };
+		FD75A28F1AA8B0A0001363DA /* GPFadeWithBlurredBackgroundAnimationController.m in Sources */ = {isa = PBXBuildFile; fileRef = FD75A28E1AA8B0A0001363DA /* GPFadeWithBlurredBackgroundAnimationController.m */; };
+		FD75A2921AA8B0D6001363DA /* GPCrossDissolveAnimationController.m in Sources */ = {isa = PBXBuildFile; fileRef = FD75A2911AA8B0D6001363DA /* GPCrossDissolveAnimationController.m */; };
+		FD75A2951AA8B7E4001363DA /* GPCoverVerticalAnimationController.m in Sources */ = {isa = PBXBuildFile; fileRef = FD75A2941AA8B7E4001363DA /* GPCoverVerticalAnimationController.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		FD75A27B1AA8AF13001363DA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FD75A2591AA8AF12001363DA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FD75A2601AA8AF12001363DA;
+			remoteInfo = EHCustomTransitionBug;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		FD75A2611AA8AF12001363DA /* EHCustomTransitionBug.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EHCustomTransitionBug.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FD75A2651AA8AF12001363DA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FD75A2661AA8AF12001363DA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		FD75A2681AA8AF12001363DA /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		FD75A2691AA8AF12001363DA /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		FD75A26B1AA8AF12001363DA /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		FD75A26C1AA8AF12001363DA /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		FD75A26F1AA8AF12001363DA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		FD75A2711AA8AF12001363DA /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		FD75A2741AA8AF12001363DA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
+		FD75A27A1AA8AF13001363DA /* EHCustomTransitionBugTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EHCustomTransitionBugTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FD75A27F1AA8AF13001363DA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FD75A2801AA8AF13001363DA /* EHCustomTransitionBugTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EHCustomTransitionBugTests.m; sourceTree = "<group>"; };
+		FD75A28A1AA8AFB1001363DA /* EHSolidColorViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EHSolidColorViewController.h; sourceTree = "<group>"; };
+		FD75A28B1AA8AFB1001363DA /* EHSolidColorViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EHSolidColorViewController.m; sourceTree = "<group>"; };
+		FD75A28D1AA8B0A0001363DA /* GPFadeWithBlurredBackgroundAnimationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPFadeWithBlurredBackgroundAnimationController.h; sourceTree = "<group>"; };
+		FD75A28E1AA8B0A0001363DA /* GPFadeWithBlurredBackgroundAnimationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPFadeWithBlurredBackgroundAnimationController.m; sourceTree = "<group>"; };
+		FD75A2901AA8B0D6001363DA /* GPCrossDissolveAnimationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPCrossDissolveAnimationController.h; sourceTree = "<group>"; };
+		FD75A2911AA8B0D6001363DA /* GPCrossDissolveAnimationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPCrossDissolveAnimationController.m; sourceTree = "<group>"; };
+		FD75A2931AA8B7E4001363DA /* GPCoverVerticalAnimationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPCoverVerticalAnimationController.h; sourceTree = "<group>"; };
+		FD75A2941AA8B7E4001363DA /* GPCoverVerticalAnimationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPCoverVerticalAnimationController.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FD75A25E1AA8AF12001363DA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FD75A2771AA8AF13001363DA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		FD75A2581AA8AF12001363DA = {
+			isa = PBXGroup;
+			children = (
+				FD75A2631AA8AF12001363DA /* EHCustomTransitionBug */,
+				FD75A27D1AA8AF13001363DA /* EHCustomTransitionBugTests */,
+				FD75A2621AA8AF12001363DA /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		FD75A2621AA8AF12001363DA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FD75A2611AA8AF12001363DA /* EHCustomTransitionBug.app */,
+				FD75A27A1AA8AF13001363DA /* EHCustomTransitionBugTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FD75A2631AA8AF12001363DA /* EHCustomTransitionBug */ = {
+			isa = PBXGroup;
+			children = (
+				FD75A2901AA8B0D6001363DA /* GPCrossDissolveAnimationController.h */,
+				FD75A2911AA8B0D6001363DA /* GPCrossDissolveAnimationController.m */,
+				FD75A2931AA8B7E4001363DA /* GPCoverVerticalAnimationController.h */,
+				FD75A2941AA8B7E4001363DA /* GPCoverVerticalAnimationController.m */,
+				FD75A28D1AA8B0A0001363DA /* GPFadeWithBlurredBackgroundAnimationController.h */,
+				FD75A28E1AA8B0A0001363DA /* GPFadeWithBlurredBackgroundAnimationController.m */,
+				FD75A2681AA8AF12001363DA /* AppDelegate.h */,
+				FD75A2691AA8AF12001363DA /* AppDelegate.m */,
+				FD75A26B1AA8AF12001363DA /* ViewController.h */,
+				FD75A26C1AA8AF12001363DA /* ViewController.m */,
+				FD75A26E1AA8AF12001363DA /* Main.storyboard */,
+				FD75A2711AA8AF12001363DA /* Images.xcassets */,
+				FD75A2731AA8AF12001363DA /* LaunchScreen.xib */,
+				FD75A2641AA8AF12001363DA /* Supporting Files */,
+				FD75A28A1AA8AFB1001363DA /* EHSolidColorViewController.h */,
+				FD75A28B1AA8AFB1001363DA /* EHSolidColorViewController.m */,
+			);
+			path = EHCustomTransitionBug;
+			sourceTree = "<group>";
+		};
+		FD75A2641AA8AF12001363DA /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				FD75A2651AA8AF12001363DA /* Info.plist */,
+				FD75A2661AA8AF12001363DA /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		FD75A27D1AA8AF13001363DA /* EHCustomTransitionBugTests */ = {
+			isa = PBXGroup;
+			children = (
+				FD75A2801AA8AF13001363DA /* EHCustomTransitionBugTests.m */,
+				FD75A27E1AA8AF13001363DA /* Supporting Files */,
+			);
+			path = EHCustomTransitionBugTests;
+			sourceTree = "<group>";
+		};
+		FD75A27E1AA8AF13001363DA /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				FD75A27F1AA8AF13001363DA /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		FD75A2601AA8AF12001363DA /* EHCustomTransitionBug */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FD75A2841AA8AF13001363DA /* Build configuration list for PBXNativeTarget "EHCustomTransitionBug" */;
+			buildPhases = (
+				FD75A25D1AA8AF12001363DA /* Sources */,
+				FD75A25E1AA8AF12001363DA /* Frameworks */,
+				FD75A25F1AA8AF12001363DA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = EHCustomTransitionBug;
+			productName = EHCustomTransitionBug;
+			productReference = FD75A2611AA8AF12001363DA /* EHCustomTransitionBug.app */;
+			productType = "com.apple.product-type.application";
+		};
+		FD75A2791AA8AF13001363DA /* EHCustomTransitionBugTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FD75A2871AA8AF13001363DA /* Build configuration list for PBXNativeTarget "EHCustomTransitionBugTests" */;
+			buildPhases = (
+				FD75A2761AA8AF13001363DA /* Sources */,
+				FD75A2771AA8AF13001363DA /* Frameworks */,
+				FD75A2781AA8AF13001363DA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				FD75A27C1AA8AF13001363DA /* PBXTargetDependency */,
+			);
+			name = EHCustomTransitionBugTests;
+			productName = EHCustomTransitionBugTests;
+			productReference = FD75A27A1AA8AF13001363DA /* EHCustomTransitionBugTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		FD75A2591AA8AF12001363DA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0610;
+				ORGANIZATIONNAME = "Eric Hyche";
+				TargetAttributes = {
+					FD75A2601AA8AF12001363DA = {
+						CreatedOnToolsVersion = 6.1;
+					};
+					FD75A2791AA8AF13001363DA = {
+						CreatedOnToolsVersion = 6.1;
+						TestTargetID = FD75A2601AA8AF12001363DA;
+					};
+				};
+			};
+			buildConfigurationList = FD75A25C1AA8AF12001363DA /* Build configuration list for PBXProject "EHCustomTransitionBug" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = FD75A2581AA8AF12001363DA;
+			productRefGroup = FD75A2621AA8AF12001363DA /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FD75A2601AA8AF12001363DA /* EHCustomTransitionBug */,
+				FD75A2791AA8AF13001363DA /* EHCustomTransitionBugTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		FD75A25F1AA8AF12001363DA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FD75A2701AA8AF12001363DA /* Main.storyboard in Resources */,
+				FD75A2751AA8AF12001363DA /* LaunchScreen.xib in Resources */,
+				FD75A2721AA8AF12001363DA /* Images.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FD75A2781AA8AF13001363DA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FD75A25D1AA8AF12001363DA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FD75A26D1AA8AF12001363DA /* ViewController.m in Sources */,
+				FD75A2951AA8B7E4001363DA /* GPCoverVerticalAnimationController.m in Sources */,
+				FD75A2921AA8B0D6001363DA /* GPCrossDissolveAnimationController.m in Sources */,
+				FD75A28C1AA8AFB1001363DA /* EHSolidColorViewController.m in Sources */,
+				FD75A26A1AA8AF12001363DA /* AppDelegate.m in Sources */,
+				FD75A28F1AA8B0A0001363DA /* GPFadeWithBlurredBackgroundAnimationController.m in Sources */,
+				FD75A2671AA8AF12001363DA /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FD75A2761AA8AF13001363DA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FD75A2811AA8AF13001363DA /* EHCustomTransitionBugTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		FD75A27C1AA8AF13001363DA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FD75A2601AA8AF12001363DA /* EHCustomTransitionBug */;
+			targetProxy = FD75A27B1AA8AF13001363DA /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		FD75A26E1AA8AF12001363DA /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				FD75A26F1AA8AF12001363DA /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		FD75A2731AA8AF12001363DA /* LaunchScreen.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				FD75A2741AA8AF12001363DA /* Base */,
+			);
+			name = LaunchScreen.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		FD75A2821AA8AF13001363DA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		FD75A2831AA8AF13001363DA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		FD75A2851AA8AF13001363DA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = EHCustomTransitionBug/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		FD75A2861AA8AF13001363DA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = EHCustomTransitionBug/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		FD75A2881AA8AF13001363DA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = EHCustomTransitionBugTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/EHCustomTransitionBug.app/EHCustomTransitionBug";
+			};
+			name = Debug;
+		};
+		FD75A2891AA8AF13001363DA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = EHCustomTransitionBugTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/EHCustomTransitionBug.app/EHCustomTransitionBug";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		FD75A25C1AA8AF12001363DA /* Build configuration list for PBXProject "EHCustomTransitionBug" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FD75A2821AA8AF13001363DA /* Debug */,
+				FD75A2831AA8AF13001363DA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FD75A2841AA8AF13001363DA /* Build configuration list for PBXNativeTarget "EHCustomTransitionBug" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FD75A2851AA8AF13001363DA /* Debug */,
+				FD75A2861AA8AF13001363DA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		FD75A2871AA8AF13001363DA /* Build configuration list for PBXNativeTarget "EHCustomTransitionBugTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FD75A2881AA8AF13001363DA /* Debug */,
+				FD75A2891AA8AF13001363DA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = FD75A2591AA8AF12001363DA /* Project object */;
+}
