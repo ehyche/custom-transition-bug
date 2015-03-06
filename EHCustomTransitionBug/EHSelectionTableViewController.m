@@ -10,4 +10,16 @@
 
 @implementation EHSelectionTableViewController
 
+- (instancetype)initWithTitle:(NSString *)title
+                 sectionTitle:(NSString *)sectionTitle
+             selectionOptions:(NSArray *)selectionOptions
+            canSelectMultiple:(BOOL)canSelectMultiple {
+    self = [super initWithStyle:UITableViewStyleGrouped];
+    if (self) {
+
+    }
+
+    return self;
+}
+
 @end

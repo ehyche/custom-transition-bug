@@ -8,6 +8,20 @@
 
 #import <UIKit/UIKit.h>
 
+@class EHSelectionTableViewController;
+
+@protocol EHSelectionTableViewControllerDelegate <NSObject>
+
+@required
+- (void)selectionTableViewControllerDidChangeSelection:(EHSelectionTableViewController *)controller;
+
+@end
+
 @interface EHSelectionTableViewController : UITableViewController
+
+- (instancetype)initWithTitle:(NSString *)title
+                 sectionTitle:(NSString *)sectionTitle
+             selectionOptions:(NSArray *)selectionOptions
+            canSelectMultiple:(BOOL)canSelectMultiple;
 
 @end
