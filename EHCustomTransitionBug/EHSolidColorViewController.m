@@ -12,41 +12,14 @@
 #import "GPFadeWithBlurredBackgroundAnimationController.h"
 #import "EHModalPresentationStyleInfo.h"
 #import "EHModalTransitionStyleInfo.h"
+#import "EHCustomTransitionStyle.h"
+#import "EHCustomTransitionInfo.h"
 
 CGFloat const kButtonHeight = 44.0;
 CGFloat const kButtonPadding = 5.0;
 
 #define SYSTEM_VERSION_LESS_THAN(v)                   ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
 
-
-typedef NS_ENUM(NSUInteger, EHCustomTransitionStyle) {
-    EHCustomTransitionStyleNone,
-    EHCustomTransitionStyleCoverVertical,
-    EHCustomTransitionStyleCrossDissolve,
-    EHCustomTransitionStyleFadeInWithDimmedBackground,
-    EHCustomTransitionStyleCount
-};
-
-@interface EHCustomTransitionInfo : NSObject
-
-@property(nonatomic, assign) EHCustomTransitionStyle style;
-@property(nonatomic, copy) NSString *name;
-@property(nonatomic, assign) BOOL selected;
-
-+ (EHCustomTransitionInfo *)infoWithStyle:(EHCustomTransitionStyle)style name:(NSString *)name;
-
-@end
-
-@implementation EHCustomTransitionInfo
-
-+ (EHCustomTransitionInfo *)infoWithStyle:(EHCustomTransitionStyle)style name:(NSString *)name {
-    EHCustomTransitionInfo *info = [[EHCustomTransitionInfo alloc] init];
-    info.style = style;
-    info.name = name;
-    return info;
-}
-
-@end
 
 @interface EHSolidColorViewController()  <UIViewControllerTransitioningDelegate>
 
