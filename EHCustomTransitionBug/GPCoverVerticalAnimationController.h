@@ -29,6 +29,8 @@
  */
 @property(nonatomic, assign) NSTimeInterval duration;
 
+@property(nonatomic, assign) CGRect presentingViewControllerFrame;
+
 /**
  *  Convenience method for creating GPCoverVerticalAnimationController objects
  *

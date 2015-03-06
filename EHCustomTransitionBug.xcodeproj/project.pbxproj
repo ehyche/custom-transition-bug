@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FD702A7C1AA8F973003F4FAD /* EHModalPresentationStyleInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = FD702A7B1AA8F973003F4FAD /* EHModalPresentationStyleInfo.m */; };
+		FD702A7F1AA8FA34003F4FAD /* EHModalTransitionStyleInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = FD702A7E1AA8FA34003F4FAD /* EHModalTransitionStyleInfo.m */; };
 		FD75A2671AA8AF12001363DA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = FD75A2661AA8AF12001363DA /* main.m */; };
 		FD75A26A1AA8AF12001363DA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FD75A2691AA8AF12001363DA /* AppDelegate.m */; };
 		FD75A26D1AA8AF12001363DA /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FD75A26C1AA8AF12001363DA /* ViewController.m */; };
@@ -31,6 +33,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		FD702A7A1AA8F973003F4FAD /* EHModalPresentationStyleInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EHModalPresentationStyleInfo.h; sourceTree = "<group>"; };
+		FD702A7B1AA8F973003F4FAD /* EHModalPresentationStyleInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EHModalPresentationStyleInfo.m; sourceTree = "<group>"; };
+		FD702A7D1AA8FA34003F4FAD /* EHModalTransitionStyleInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EHModalTransitionStyleInfo.h; sourceTree = "<group>"; };
+		FD702A7E1AA8FA34003F4FAD /* EHModalTransitionStyleInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EHModalTransitionStyleInfo.m; sourceTree = "<group>"; };
 		FD75A2611AA8AF12001363DA /* EHCustomTransitionBug.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EHCustomTransitionBug.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FD75A2651AA8AF12001363DA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FD75A2661AA8AF12001363DA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -109,6 +115,10 @@
 				FD75A2641AA8AF12001363DA /* Supporting Files */,
 				FD75A28A1AA8AFB1001363DA /* EHSolidColorViewController.h */,
 				FD75A28B1AA8AFB1001363DA /* EHSolidColorViewController.m */,
+				FD702A7A1AA8F973003F4FAD /* EHModalPresentationStyleInfo.h */,
+				FD702A7B1AA8F973003F4FAD /* EHModalPresentationStyleInfo.m */,
+				FD702A7D1AA8FA34003F4FAD /* EHModalTransitionStyleInfo.h */,
+				FD702A7E1AA8FA34003F4FAD /* EHModalTransitionStyleInfo.m */,
 			);
 			path = EHCustomTransitionBug;
 			sourceTree = "<group>";
@@ -240,9 +250,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				FD75A26D1AA8AF12001363DA /* ViewController.m in Sources */,
+				FD702A7F1AA8FA34003F4FAD /* EHModalTransitionStyleInfo.m in Sources */,
 				FD75A2951AA8B7E4001363DA /* GPCoverVerticalAnimationController.m in Sources */,
 				FD75A2921AA8B0D6001363DA /* GPCrossDissolveAnimationController.m in Sources */,
 				FD75A28C1AA8AFB1001363DA /* EHSolidColorViewController.m in Sources */,
+				FD702A7C1AA8F973003F4FAD /* EHModalPresentationStyleInfo.m in Sources */,
 				FD75A26A1AA8AF12001363DA /* AppDelegate.m in Sources */,
 				FD75A28F1AA8B0A0001363DA /* GPFadeWithBlurredBackgroundAnimationController.m in Sources */,
 				FD75A2671AA8AF12001363DA /* main.m in Sources */,
@@ -440,6 +452,7 @@
 				FD75A2861AA8AF13001363DA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		FD75A2871AA8AF13001363DA /* Build configuration list for PBXNativeTarget "EHCustomTransitionBugTests" */ = {
 			isa = XCConfigurationList;
@@ -448,6 +461,7 @@
 				FD75A2891AA8AF13001363DA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

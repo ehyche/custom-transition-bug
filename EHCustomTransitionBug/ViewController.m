@@ -27,13 +27,19 @@
 }
 
 - (IBAction)presentButtonTapped:(id)sender {
-    EHSolidColorViewController *controller = [[EHSolidColorViewController alloc] init];
+    EHSolidColorViewController *controller = [[EHSolidColorViewController alloc] initWithStyle:UITableViewStyleGrouped];
     controller.color = [UIColor redColor];
 
-    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
-    navController.transitioningDelegate = self;
-    navController.modalPresentationStyle = UIModalPresentationCustom;
-    [self presentViewController:navController animated:YES completion:^{
+//    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
+//    navController.transitioningDelegate = self;
+//    navController.modalPresentationStyle = UIModalPresentationCustom;
+//    [self presentViewController:navController animated:YES completion:^{
+//        NSLog(@"Presentation of navController completion block");
+//    }];
+
+    controller.transitioningDelegate = self;
+    controller.modalPresentationStyle = UIModalPresentationCustom;
+    [self presentViewController:controller animated:YES completion:^{
         NSLog(@"Presentation of navController completion block");
     }];
 

@@ -73,6 +73,9 @@ static NSTimeInterval const kGPCrossDissolveAnimationControllerDefaultDuration =
         viewToAnimate.frame = containerView.bounds;
         viewToAnimate.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         [containerView addSubview:viewToAnimate];
+    } else {
+        // XXXMEH - workaround
+//        toViewController.view.frame = self.presentingViewControllerFrame;
     }
 
     if (isAnimated) {

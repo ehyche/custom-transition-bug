@@ -11,5 +11,6 @@
 @interface EHSolidColorViewController : UITableViewController
 
 @property(nonatomic, copy) UIColor *color;
+@property(nonatomic, assign) NSUInteger controllerIndex;
 
 @end
