@@ -20,6 +20,21 @@
 #import "EHSelectionOption.h"
 #import "EHSelectionTableViewController.h"
 
+NSInteger const kEHSectionIndexThisController = 0;
+NSInteger const kEHSectionIndexControllerToPresent = 1;
+
+NSInteger const kEHSectionCount = 2;
+NSInteger const kEHSectionThisControllerNumRows = 3;
+NSInteger const kEHSectionControllerToPresentNumRows = 3;
+
+// These are common to both sections
+NSInteger const kEHRowModalPresentationStyle = 0;
+NSInteger const kEHRowModalTransitionStyle = 1;
+// These are rows specific to the This Controller section
+NSInteger const kEHRowDefinesPresentationContext = 2;
+// These are rows specific to the Controller To Present section
+NSInteger const kEHRowWrapInNavigationController = 2;
+
 CGFloat const kButtonHeight = 44.0;
 CGFloat const kButtonPadding = 5.0;
 
@@ -35,7 +50,6 @@ NSInteger const kSelectionControllerTagModalTransitionStyle   = 201;
                                EHBooleanSwitchCellDelegate,
                                EHSelectionTableViewControllerDelegate>
 
-@property(nonatomic, assign) EHCustomTransitionStyle customTransitionStyle;
 @property(nonatomic, strong) UILabel *headerView;
 @property(nonatomic, strong) UIButton *presentButton;
 @property(nonatomic, strong) UIButton *doneButton;
@@ -158,16 +172,16 @@ NSInteger const kSelectionControllerTagModalTransitionStyle   = 201;
 #pragma mark - UITableViewDataSource methods
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 2;
+    return kEHSectionCount;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     NSInteger numRows = 0;
 
-    if (section == 0) {
-        numRows = 3;
-    } else if (section == 1) {
-        numRows = 3;
+    if (section == kEHSectionIndexThisController) {
+        numRows = kEHSectionThisControllerNumRows;
+    } else if (section == kEHSectionIndexControllerToPresent) {
+        numRows = kEHSectionControllerToPresentNumRows;
     }
 
     return numRows;
@@ -175,14 +189,14 @@ NSInteger const kSelectionControllerTagModalTransitionStyle   = 201;
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSString *reuseID = nil;
-    if (indexPath.section == 0) {
-        if (indexPath.row == 2) {
+    if (indexPath.section == kEHSectionIndexThisController) {
+        if (indexPath.row == kEHRowDefinesPresentationContext) {
             reuseID = [EHBooleanSwitchCell reuseID];
         } else {
             reuseID = [EHNameValueDisplayCell reuseID];
         }
-    } else if (indexPath.section == 1) {
-        if (indexPath.row == 2) {
+    } else if (indexPath.section == kEHSectionIndexControllerToPresent) {
+        if (indexPath.row == kEHRowWrapInNavigationController) {
             reuseID = [EHBooleanSwitchCell reuseID];
         } else {
             reuseID = [EHNameValueChangeCell reuseID];
@@ -195,26 +209,26 @@ NSInteger const kSelectionControllerTagModalTransitionStyle   = 201;
     NSString *detailText = nil;
     BOOL cellOn = NO;
     NSInteger booleanCellTag = 0;
-    if (indexPath.section == 0) {
-        if (indexPath.item == 0) {
+    if (indexPath.section == kEHSectionIndexThisController) {
+        if (indexPath.row == kEHRowModalPresentationStyle) {
             text = @"UIModalPresentationStyle";
             detailText = [self ourModalPresentationStyle];
-        } else if (indexPath.item == 1) {
+        } else if (indexPath.row == kEHRowModalTransitionStyle) {
             text = @"UIModalTransitionStyle";
             detailText = [self ourModalTransitionStyle];
-        } else if (indexPath.item == 2) {
+        } else if (indexPath.row == kEHRowDefinesPresentationContext) {
             text = @"Defines Presentation Context";
             cellOn = self.definesPresentationContext;
             booleanCellTag = kBooleanCellTagDefinesPresentationContext;
         }
-    } else if (indexPath.section == 1) {
-        if (indexPath.item == 0) {
+    } else if (indexPath.section == kEHSectionIndexControllerToPresent) {
+        if (indexPath.row == kEHRowModalPresentationStyle) {
             text = @"UIModalPresentationStyle";
             detailText = [self stringForModalPresentationStyle:self.modalPresentationStyleToUse];
-        } else if (indexPath.item == 1) {
+        } else if (indexPath.row == kEHRowModalTransitionStyle) {
             text = @"UIModalTransitionStyle";
             detailText = [self stringForModalTransitionStyle:self.modalTransitionStyleToUse];
-        } else if (indexPath.item == 2) {
+        } else if (indexPath.row == kEHRowWrapInNavigationController) {
             text = @"Wrap in UINavigationController";
             cellOn = YES;
             booleanCellTag = kBooleanCellTagWrapInNavigationController;
@@ -237,9 +251,9 @@ NSInteger const kSelectionControllerTagModalTransitionStyle   = 201;
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     NSString *title = nil;
 
-    if (section == 0) {
+    if (section == kEHSectionIndexThisController) {
         title = @"This View Controller";
-    } else if (section == 1) {
+    } else if (section == kEHSectionIndexControllerToPresent) {
         title = @"View Controller to Present";
     }
 
@@ -252,11 +266,11 @@ NSInteger const kSelectionControllerTagModalTransitionStyle   = 201;
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
-    if (indexPath.section == 1) {
-        if (indexPath.item == 0) {
+    if (indexPath.section == kEHSectionIndexControllerToPresent) {
+        if (indexPath.item == kEHRowModalPresentationStyle) {
             // Let the user choose a modal presentation style
             [self showModalPresentationStylesSelectionController];
-        } else if (indexPath.item == 1) {
+        } else if (indexPath.item == kEHRowModalTransitionStyle) {
             // Let the user choose a modal transition style
             [self showModalTransitionStylesSelectionController];
         }

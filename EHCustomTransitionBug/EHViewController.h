@@ -7,9 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "EHCustomTransitionStyle.h"
 
 @interface EHViewController : UITableViewController
 
 @property(nonatomic, assign) NSUInteger controllerIndex;
+@property(nonatomic, assign) EHCustomTransitionStyle customTransitionStyle;
 
 @end
