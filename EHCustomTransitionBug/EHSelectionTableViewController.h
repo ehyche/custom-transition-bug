@@ -13,11 +13,19 @@
 @protocol EHSelectionTableViewControllerDelegate <NSObject>
 
 @required
+
 - (void)selectionTableViewControllerDidChangeSelection:(EHSelectionTableViewController *)controller;
 
 @end
 
 @interface EHSelectionTableViewController : UITableViewController
+
+@property(nonatomic, assign) NSInteger tag;
+
+@property(nonatomic, readonly, copy) NSIndexSet *selectedIndexes;
+@property(nonatomic, readonly, copy) NSArray    *selectionOptions;
+
+@property(nonatomic, weak) id<EHSelectionTableViewControllerDelegate> delegate;
 
 - (instancetype)initWithTitle:(NSString *)title
                  sectionTitle:(NSString *)sectionTitle

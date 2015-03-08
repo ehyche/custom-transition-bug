@@ -10,7 +10,9 @@
 
 @interface EHSelectionOption : NSObject
 
-@property(nonatomic, copy) NSString *text;
-@property(nonatomic, copy) NSString *detailText;
+@property(nonatomic, copy)   NSString *text;
+@property(nonatomic, copy)   NSString *detailText;
+@property(nonatomic, strong) id        data;
+@property(nonatomic, assign) BOOL      selected;
 
 @end
