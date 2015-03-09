@@ -19,21 +19,23 @@
 #import "EHNameValueChangeCell.h"
 #import "EHSelectionOption.h"
 #import "EHSelectionTableViewController.h"
+#import "EHNavigationController.h"
 
 NSInteger const kEHSectionIndexThisController = 0;
 NSInteger const kEHSectionIndexControllerToPresent = 1;
 
 NSInteger const kEHSectionCount = 2;
-NSInteger const kEHSectionThisControllerNumRows = 3;
-NSInteger const kEHSectionControllerToPresentNumRows = 3;
+NSInteger const kEHSectionThisControllerNumRows = 4;
+NSInteger const kEHSectionControllerToPresentNumRows = 4;
 
 // These are common to both sections
 NSInteger const kEHRowModalPresentationStyle = 0;
 NSInteger const kEHRowModalTransitionStyle = 1;
+NSInteger const kEHRowCustomTransitionStyle = 2;
 // These are rows specific to the This Controller section
-NSInteger const kEHRowDefinesPresentationContext = 2;
+NSInteger const kEHRowDefinesPresentationContext = 3;
 // These are rows specific to the Controller To Present section
-NSInteger const kEHRowWrapInNavigationController = 2;
+NSInteger const kEHRowWrapInNavigationController = 3;
 
 CGFloat const kButtonHeight = 44.0;
 CGFloat const kButtonPadding = 5.0;
@@ -43,6 +45,11 @@ NSInteger const kBooleanCellTagWrapInNavigationController = 101;
 
 NSInteger const kSelectionControllerTagModalPresentationStyle = 200;
 NSInteger const kSelectionControllerTagModalTransitionStyle   = 201;
+NSInteger const kSelectionControllerTagCustomTransitionStyle  = 202;
+
+static NSString * const kEHModalPresentationStyleString = @"UIModalPresentationStyle";
+static NSString * const kEHModalTransitionStyleString   = @"UIModalTransitionStyle";
+static NSString * const kEHCustomTransitionStyleString  = @"Custom Transition Style";
 
 #define SYSTEM_VERSION_LESS_THAN(v) ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
 
@@ -60,11 +67,14 @@ NSInteger const kSelectionControllerTagModalTransitionStyle   = 201;
 
 @property(nonatomic, assign) UIModalPresentationStyle modalPresentationStyleToUse;
 @property(nonatomic, assign) UIModalTransitionStyle   modalTransitionStyleToUse;
+@property(nonatomic, assign) EHCustomTransitionStyle customTransitionStyleToUse;
 @property(nonatomic, assign) BOOL                     shouldWrapInNavigationController;
 
 @end
 
 @implementation EHViewController
+
+@synthesize customTransitionStyle;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style {
     self = [super initWithStyle:style];
@@ -136,10 +146,12 @@ NSInteger const kSelectionControllerTagModalTransitionStyle   = 201;
         UIViewController *presentedViewController = self.presentingViewController.presentedViewController;
         self.modalPresentationStyleToUse = presentedViewController.modalPresentationStyle;
         self.modalTransitionStyleToUse = presentedViewController.modalTransitionStyle;
+        self.customTransitionStyleToUse = [self customTransitionStyleForViewController:presentedViewController];
 
     } else {
         self.modalPresentationStyleToUse = UIModalPresentationFullScreen;
         self.modalTransitionStyleToUse = UIModalTransitionStyleCoverVertical;
+        self.customTransitionStyleToUse = EHCustomTransitionStyleNone;
     }
     self.shouldWrapInNavigationController = (self.navigationController != nil);
 
@@ -211,11 +223,14 @@ NSInteger const kSelectionControllerTagModalTransitionStyle   = 201;
     NSInteger booleanCellTag = 0;
     if (indexPath.section == kEHSectionIndexThisController) {
         if (indexPath.row == kEHRowModalPresentationStyle) {
-            text = @"UIModalPresentationStyle";
+            text = kEHModalPresentationStyleString;
             detailText = [self ourModalPresentationStyle];
         } else if (indexPath.row == kEHRowModalTransitionStyle) {
-            text = @"UIModalTransitionStyle";
+            text = kEHModalTransitionStyleString;
             detailText = [self ourModalTransitionStyle];
+        } else if (indexPath.row == kEHRowCustomTransitionStyle) {
+            text = kEHCustomTransitionStyleString;
+            detailText = [self ourCustomTransitionStyle];
         } else if (indexPath.row == kEHRowDefinesPresentationContext) {
             text = @"Defines Presentation Context";
             cellOn = self.definesPresentationContext;
@@ -223,11 +238,14 @@ NSInteger const kSelectionControllerTagModalTransitionStyle   = 201;
         }
     } else if (indexPath.section == kEHSectionIndexControllerToPresent) {
         if (indexPath.row == kEHRowModalPresentationStyle) {
-            text = @"UIModalPresentationStyle";
+            text = kEHModalPresentationStyleString;
             detailText = [self stringForModalPresentationStyle:self.modalPresentationStyleToUse];
         } else if (indexPath.row == kEHRowModalTransitionStyle) {
-            text = @"UIModalTransitionStyle";
+            text = kEHModalTransitionStyleString;
             detailText = [self stringForModalTransitionStyle:self.modalTransitionStyleToUse];
+        } else if (indexPath.row == kEHRowCustomTransitionStyle) {
+            text = kEHCustomTransitionStyleString;
+            detailText = [self stringForCustomTransitionStyle:self.customTransitionStyleToUse];
         } else if (indexPath.row == kEHRowWrapInNavigationController) {
             text = @"Wrap in UINavigationController";
             cellOn = YES;
@@ -267,12 +285,15 @@ NSInteger const kSelectionControllerTagModalTransitionStyle   = 201;
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
     if (indexPath.section == kEHSectionIndexControllerToPresent) {
-        if (indexPath.item == kEHRowModalPresentationStyle) {
+        if (indexPath.row == kEHRowModalPresentationStyle) {
             // Let the user choose a modal presentation style
             [self showModalPresentationStylesSelectionController];
-        } else if (indexPath.item == kEHRowModalTransitionStyle) {
+        } else if (indexPath.row == kEHRowModalTransitionStyle) {
             // Let the user choose a modal transition style
             [self showModalTransitionStylesSelectionController];
+        } else if (indexPath.row == kEHRowCustomTransitionStyle) {
+            // Let the user choose the custom transition style
+            [self showCustomTransitionStyleSelectionController];
         }
     }
 }
@@ -284,21 +305,21 @@ NSInteger const kSelectionControllerTagModalTransitionStyle   = 201;
                                                                        sourceController:(UIViewController *)source {
     id<UIViewControllerAnimatedTransitioning> animator = nil;
 
-    //    EHCustomTransitionStyle style = [self selectedCustomTransitionStyle];
-    //
-    //    if (style == EHCustomTransitionStyleCoverVertical) {
-    //        GPCoverVerticalAnimationController *coverVertical = [[GPCoverVerticalAnimationController alloc] init];
-    //        coverVertical.dismissal = NO;
-    //        animator = coverVertical;
-    //    } else if (style == EHCustomTransitionStyleCrossDissolve) {
-    //        GPCrossDissolveAnimationController *crossDissolve = [[GPCrossDissolveAnimationController alloc] init];
-    //        crossDissolve.dismissal = NO;
-    //        animator = crossDissolve;
-    //    } else if (style == EHCustomTransitionStyleFadeInWithDimmedBackground) {
-    //        GPFadeWithBlurredBackgroundAnimationController *fade = [[GPFadeWithBlurredBackgroundAnimationController alloc] init];
-    //        fade.dismissal = NO;
-    //        animator = fade;
-    //    }
+    EHCustomTransitionStyle style = [self customTransitionStyleForViewController:presented];
+
+    if (style == EHCustomTransitionStyleCoverVertical) {
+        GPCoverVerticalAnimationController *coverVertical = [[GPCoverVerticalAnimationController alloc] init];
+        coverVertical.dismissal = NO;
+        animator = coverVertical;
+    } else if (style == EHCustomTransitionStyleCrossDissolve) {
+        GPCrossDissolveAnimationController *crossDissolve = [[GPCrossDissolveAnimationController alloc] init];
+        crossDissolve.dismissal = NO;
+        animator = crossDissolve;
+    } else if (style == EHCustomTransitionStyleFadeInWithDimmedBackground) {
+        GPFadeWithBlurredBackgroundAnimationController *fade = [[GPFadeWithBlurredBackgroundAnimationController alloc] init];
+        fade.dismissal = NO;
+        animator = fade;
+    }
 
     return animator;
 }
@@ -306,21 +327,21 @@ NSInteger const kSelectionControllerTagModalTransitionStyle   = 201;
 - (id <UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed {
     id<UIViewControllerAnimatedTransitioning> animator = nil;
 
-    //    EHCustomTransitionStyle style = [self selectedCustomTransitionStyle];
-    //
-    //    if (style == EHCustomTransitionStyleCoverVertical) {
-    //        GPCoverVerticalAnimationController *coverVertical = [[GPCoverVerticalAnimationController alloc] init];
-    //        coverVertical.dismissal = YES;
-    //        animator = coverVertical;
-    //    } else if (style == EHCustomTransitionStyleCrossDissolve) {
-    //        GPCrossDissolveAnimationController *crossDissolve = [[GPCrossDissolveAnimationController alloc] init];
-    //        crossDissolve.dismissal = YES;
-    //        animator = crossDissolve;
-    //    } else if (style == EHCustomTransitionStyleFadeInWithDimmedBackground) {
-    //        GPFadeWithBlurredBackgroundAnimationController *fade = [[GPFadeWithBlurredBackgroundAnimationController alloc] init];
-    //        fade.dismissal = YES;
-    //        animator = fade;
-    //    }
+    EHCustomTransitionStyle style = [self customTransitionStyleForViewController:dismissed];
+
+    if (style == EHCustomTransitionStyleCoverVertical) {
+        GPCoverVerticalAnimationController *coverVertical = [[GPCoverVerticalAnimationController alloc] init];
+        coverVertical.dismissal = YES;
+        animator = coverVertical;
+    } else if (style == EHCustomTransitionStyleCrossDissolve) {
+        GPCrossDissolveAnimationController *crossDissolve = [[GPCrossDissolveAnimationController alloc] init];
+        crossDissolve.dismissal = YES;
+        animator = crossDissolve;
+    } else if (style == EHCustomTransitionStyleFadeInWithDimmedBackground) {
+        GPFadeWithBlurredBackgroundAnimationController *fade = [[GPFadeWithBlurredBackgroundAnimationController alloc] init];
+        fade.dismissal = YES;
+        animator = fade;
+    }
 
     return animator;
 }
@@ -348,11 +369,18 @@ NSInteger const kSelectionControllerTagModalTransitionStyle   = 201;
     if (controller.tag == kSelectionControllerTagModalPresentationStyle) {
         UIModalPresentationStyle styleData = [selectedOption.data integerValue];
         self.modalPresentationStyleToUse = styleData;
-        [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationNone];
+        [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:kEHRowModalPresentationStyle inSection:kEHSectionIndexControllerToPresent]]
+                              withRowAnimation:UITableViewRowAnimationNone];
     } else if (controller.tag == kSelectionControllerTagModalTransitionStyle) {
         UIModalTransitionStyle styleData = [selectedOption.data integerValue];
         self.modalTransitionStyleToUse = styleData;
-        [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationNone];
+        [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:kEHRowModalTransitionStyle inSection:kEHSectionIndexControllerToPresent]]
+                              withRowAnimation:UITableViewRowAnimationNone];
+    } else if (controller.tag == kSelectionControllerTagCustomTransitionStyle) {
+        EHCustomTransitionStyle styleData = [selectedOption.data integerValue];
+        self.customTransitionStyleToUse = styleData;
+        [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:kEHRowCustomTransitionStyle inSection:kEHSectionIndexControllerToPresent]]
+                              withRowAnimation:UITableViewRowAnimationNone];
     }
 }
 
@@ -363,14 +391,17 @@ NSInteger const kSelectionControllerTagModalTransitionStyle   = 201;
     EHViewController *controller = [[EHViewController alloc] initWithStyle:UITableViewStyleGrouped];
     controller.controllerIndex = self.controllerIndex + 1;
 
-    UIViewController *controllerToPresent = controller;
+    UIViewController<EHCustomTransitionViewController> *controllerToPresent = controller;
     if (self.shouldWrapInNavigationController) {
-        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
+        EHNavigationController *navController = [[EHNavigationController alloc] initWithRootViewController:controller];
         controllerToPresent = navController;
     }
 
     controllerToPresent.modalPresentationStyle = self.modalPresentationStyleToUse;
     controllerToPresent.modalTransitionStyle   = self.modalTransitionStyleToUse;
+    controllerToPresent.customTransitionStyle  = self.customTransitionStyleToUse;
+
+    controllerToPresent.transitioningDelegate  = (controllerToPresent.modalPresentationStyle == UIModalPresentationCustom ? self : nil);
 
     [self presentViewController:controllerToPresent animated:YES completion:^{
         NSLog(@"Presentation of controller completion block");
@@ -444,6 +475,17 @@ NSInteger const kSelectionControllerTagModalTransitionStyle   = 201;
     return style;
 }
 
+- (NSString *)ourCustomTransitionStyle {
+    NSString *style = @"Not Presented";
+
+    if (self.presentingViewController != nil) {
+        UIViewController *presentedViewController = self.presentingViewController.presentedViewController;
+        style = [self stringForCustomTransitionStyle:[self customTransitionStyleForViewController:presentedViewController]];
+    }
+
+    return style;
+}
+
 - (NSArray *)selectionOptionsFromModalPresentationStyles {
     BOOL isPreIOS8 = SYSTEM_VERSION_LESS_THAN(@"8.0");
     NSUInteger numOptions = (isPreIOS8 ? 5 : self.modalPresentationStyles.count);
@@ -476,8 +518,23 @@ NSInteger const kSelectionControllerTagModalTransitionStyle   = 201;
     return [NSArray arrayWithArray:tmpOptions];
 }
 
+- (NSArray *)selectionOptionsFromCustomTransitionStyles {
+    NSUInteger numOptions = self.customTransitionStyles.count;
+    NSMutableArray *tmpOptions = [NSMutableArray arrayWithCapacity:numOptions];
+    for (NSUInteger i = 0; i < numOptions; i++) {
+        EHCustomTransitionInfo *ithInfo = self.customTransitionStyles[i];
+        EHSelectionOption *ithOption = [[EHSelectionOption alloc] init];
+        ithOption.text = ithInfo.name;
+        ithOption.selected = (ithInfo.style == self.customTransitionStyleToUse);
+        ithOption.data = @(ithInfo.style);
+        [tmpOptions addObject:ithOption];
+    }
+
+    return [NSArray arrayWithArray:tmpOptions];
+}
+
 - (void)showModalPresentationStylesSelectionController {
-    EHSelectionTableViewController *controller = [[EHSelectionTableViewController alloc] initWithTitle:@"UIModalPresentationStyle"
+    EHSelectionTableViewController *controller = [[EHSelectionTableViewController alloc] initWithTitle:kEHModalPresentationStyleString
                                                                                           sectionTitle:nil
                                                                                       selectionOptions:[self selectionOptionsFromModalPresentationStyles]
                                                                                      canSelectMultiple:NO];
@@ -487,13 +544,34 @@ NSInteger const kSelectionControllerTagModalTransitionStyle   = 201;
 }
 
 - (void)showModalTransitionStylesSelectionController {
-    EHSelectionTableViewController *controller = [[EHSelectionTableViewController alloc] initWithTitle:@"UIModalTransitionStyle"
+    EHSelectionTableViewController *controller = [[EHSelectionTableViewController alloc] initWithTitle:kEHModalTransitionStyleString
                                                                                           sectionTitle:nil
                                                                                       selectionOptions:[self selectionOptionsFromModalTransitionStyles]
                                                                                      canSelectMultiple:NO];
     controller.tag = kSelectionControllerTagModalTransitionStyle;
     controller.delegate = self;
     [self.navigationController pushViewController:controller animated:YES];
+}
+
+- (void)showCustomTransitionStyleSelectionController {
+    EHSelectionTableViewController *controller = [[EHSelectionTableViewController alloc] initWithTitle:kEHCustomTransitionStyleString
+                                                                                          sectionTitle:nil
+                                                                                      selectionOptions:[self selectionOptionsFromCustomTransitionStyles]
+                                                                                     canSelectMultiple:NO];
+    controller.tag = kSelectionControllerTagCustomTransitionStyle;
+    controller.delegate = self;
+    [self.navigationController pushViewController:controller animated:YES];
+}
+
+- (EHCustomTransitionStyle)customTransitionStyleForViewController:(UIViewController *)viewController {
+    EHCustomTransitionStyle style = EHCustomTransitionStyleNone;
+
+    if ([viewController conformsToProtocol:@protocol(EHCustomTransitionViewController)]) {
+        UIViewController<EHCustomTransitionViewController> *customTransitionViewController = (UIViewController<EHCustomTransitionViewController> *)viewController;
+        style = customTransitionViewController.customTransitionStyle;
+    }
+
+    return style;
 }
 
 @end

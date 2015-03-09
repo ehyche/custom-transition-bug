@@ -16,6 +16,7 @@
 		FD702A8D1AA962B4003F4FAD /* EHSelectionTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FD702A8C1AA962B4003F4FAD /* EHSelectionTableViewController.m */; };
 		FD702A901AA96518003F4FAD /* EHSelectionOption.m in Sources */ = {isa = PBXBuildFile; fileRef = FD702A8F1AA96518003F4FAD /* EHSelectionOption.m */; };
 		FD74F38F1AAD116800D45EA1 /* EHViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FD74F38E1AAD116800D45EA1 /* EHViewController.m */; };
+		FD74F3931AAD1A8D00D45EA1 /* EHNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = FD74F3921AAD1A8D00D45EA1 /* EHNavigationController.m */; };
 		FD75A2671AA8AF12001363DA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = FD75A2661AA8AF12001363DA /* main.m */; };
 		FD75A26A1AA8AF12001363DA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FD75A2691AA8AF12001363DA /* AppDelegate.m */; };
 		FD75A2721AA8AF12001363DA /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FD75A2711AA8AF12001363DA /* Images.xcassets */; };
@@ -56,6 +57,9 @@
 		FD702A8F1AA96518003F4FAD /* EHSelectionOption.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EHSelectionOption.m; sourceTree = "<group>"; };
 		FD74F38D1AAD116800D45EA1 /* EHViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EHViewController.h; sourceTree = "<group>"; };
 		FD74F38E1AAD116800D45EA1 /* EHViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EHViewController.m; sourceTree = "<group>"; };
+		FD74F3901AAD19D200D45EA1 /* EHCustomTransitionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EHCustomTransitionViewController.h; sourceTree = "<group>"; };
+		FD74F3911AAD1A8D00D45EA1 /* EHNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EHNavigationController.h; sourceTree = "<group>"; };
+		FD74F3921AAD1A8D00D45EA1 /* EHNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EHNavigationController.m; sourceTree = "<group>"; };
 		FD75A2611AA8AF12001363DA /* EHCustomTransitionBug.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EHCustomTransitionBug.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FD75A2651AA8AF12001363DA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FD75A2661AA8AF12001363DA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -143,6 +147,9 @@
 				FD5E96321AAB6DC700C0AA9D /* EHNameValueChangeCell.m */,
 				FD74F38D1AAD116800D45EA1 /* EHViewController.h */,
 				FD74F38E1AAD116800D45EA1 /* EHViewController.m */,
+				FD74F3901AAD19D200D45EA1 /* EHCustomTransitionViewController.h */,
+				FD74F3911AAD1A8D00D45EA1 /* EHNavigationController.h */,
+				FD74F3921AAD1A8D00D45EA1 /* EHNavigationController.m */,
 			);
 			path = EHCustomTransitionBug;
 			sourceTree = "<group>";
@@ -284,6 +291,7 @@
 				FD702A8A1AA96194003F4FAD /* EHCustomTransitionInfo.m in Sources */,
 				FD75A26A1AA8AF12001363DA /* AppDelegate.m in Sources */,
 				FD75A28F1AA8B0A0001363DA /* GPFadeWithBlurredBackgroundAnimationController.m in Sources */,
+				FD74F3931AAD1A8D00D45EA1 /* EHNavigationController.m in Sources */,
 				FD75A2671AA8AF12001363DA /* main.m in Sources */,
 				FD702A8D1AA962B4003F4FAD /* EHSelectionTableViewController.m in Sources */,
 			);

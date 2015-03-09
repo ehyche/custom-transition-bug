@@ -1,5 +1,5 @@
 //
-//  EHViewController.h
+//  EHNavigationController.h
 //  EHCustomTransitionBug
 //
 //  Created by Eric Hyche on 3/8/15.
@@ -9,8 +9,6 @@
 #import <UIKit/UIKit.h>
 #import "EHCustomTransitionViewController.h"
 
-@interface EHViewController : UITableViewController <EHCustomTransitionViewController>
-
-@property(nonatomic, assign) NSUInteger controllerIndex;
+@interface EHNavigationController : UINavigationController <EHCustomTransitionViewController>
 
 @end
