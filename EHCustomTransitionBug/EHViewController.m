@@ -20,6 +20,7 @@
 #import "EHSelectionOption.h"
 #import "EHSelectionTableViewController.h"
 #import "EHNavigationController.h"
+#import "EHUtilities.h"
 
 NSInteger const kEHSectionIndexThisController = 0;
 NSInteger const kEHSectionIndexControllerToPresent = 1;
@@ -50,8 +51,6 @@ NSInteger const kSelectionControllerTagCustomTransitionStyle  = 202;
 static NSString * const kEHModalPresentationStyleString = @"UIModalPresentationStyle";
 static NSString * const kEHModalTransitionStyleString   = @"UIModalTransitionStyle";
 static NSString * const kEHCustomTransitionStyleString  = @"Custom Transition Style";
-
-#define SYSTEM_VERSION_LESS_THAN(v) ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
 
 @interface EHViewController() <UIViewControllerTransitioningDelegate,
                                EHBooleanSwitchCellDelegate,

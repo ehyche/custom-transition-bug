@@ -7,13 +7,16 @@
 //
 
 #import "GPFadeWithBlurredBackgroundAnimationController.h"
+#import "EHUtilities.h"
 
 NSTimeInterval const kGPFadeWithBlurredBackgroundDefaultDuration = 0.3;
 
 CGFloat const kGPFadeWithBlurredBackgroundDimmedAlpha = 0.50;
 
-CGFloat const kGPFadeWithBlurredBackgroundDefaultWidth = 280.0;
-CGFloat const kGPFadeWithBlurredBackgroundDefaultHeight = 400.0;
+CGFloat const kGPFadeWithBlurredBackgroundDefaultWidthCompact = 280.0;
+CGFloat const kGPFadeWithBlurredBackgroundDefaultHeightCompact = 400.0;
+CGFloat const kGPFadeWithBlurredBackgroundDefaultWidthRegular = 600.0;
+CGFloat const kGPFadeWithBlurredBackgroundDefaultHeightRegular = 700.0;
 
 NSInteger const kGPFadeWithBlurredBackgroundDimViewTag = 999;
 
@@ -24,7 +27,25 @@ CGFloat const kGPFadeWithBlurredBackgroundMinMargin = 20.0;
 #pragma mark - GPFadeWithBlurredBackgroundAnimationController public methods
 
 + (CGSize)defaultPresentedViewControllerSize {
-    return CGSizeMake(kGPFadeWithBlurredBackgroundDefaultWidth, kGPFadeWithBlurredBackgroundDefaultHeight);
+    CGSize defaultSize = CGSizeZero;
+
+    if (SYSTEM_VERSION_LESS_THAN(@"8.0")) {
+        UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
+        if (idiom == UIUserInterfaceIdiomPad) {
+            defaultSize = CGSizeMake(kGPFadeWithBlurredBackgroundDefaultWidthRegular, kGPFadeWithBlurredBackgroundDefaultHeightRegular);
+        } else {
+            defaultSize = CGSizeMake(kGPFadeWithBlurredBackgroundDefaultWidthCompact, kGPFadeWithBlurredBackgroundDefaultHeightCompact);
+        }
+    } else {
+        UIUserInterfaceSizeClass horzSizeClass = [[[UIScreen mainScreen] traitCollection] horizontalSizeClass];
+        if (horzSizeClass == UIUserInterfaceSizeClassRegular) {
+            defaultSize = CGSizeMake(kGPFadeWithBlurredBackgroundDefaultWidthRegular, kGPFadeWithBlurredBackgroundDefaultHeightRegular);
+        } else {
+            defaultSize = CGSizeMake(kGPFadeWithBlurredBackgroundDefaultWidthCompact, kGPFadeWithBlurredBackgroundDefaultHeightCompact);
+        }
+    }
+
+    return defaultSize;
 }
 
 - (instancetype)init {

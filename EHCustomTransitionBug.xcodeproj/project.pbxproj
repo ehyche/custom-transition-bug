@@ -60,6 +60,7 @@
 		FD74F3901AAD19D200D45EA1 /* EHCustomTransitionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EHCustomTransitionViewController.h; sourceTree = "<group>"; };
 		FD74F3911AAD1A8D00D45EA1 /* EHNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EHNavigationController.h; sourceTree = "<group>"; };
 		FD74F3921AAD1A8D00D45EA1 /* EHNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EHNavigationController.m; sourceTree = "<group>"; };
+		FD74F3941AAD257000D45EA1 /* EHUtilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EHUtilities.h; sourceTree = "<group>"; };
 		FD75A2611AA8AF12001363DA /* EHCustomTransitionBug.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EHCustomTransitionBug.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FD75A2651AA8AF12001363DA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FD75A2661AA8AF12001363DA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -150,6 +151,7 @@
 				FD74F3901AAD19D200D45EA1 /* EHCustomTransitionViewController.h */,
 				FD74F3911AAD1A8D00D45EA1 /* EHNavigationController.h */,
 				FD74F3921AAD1A8D00D45EA1 /* EHNavigationController.m */,
+				FD74F3941AAD257000D45EA1 /* EHUtilities.h */,
 			);
 			path = EHCustomTransitionBug;
 			sourceTree = "<group>";
