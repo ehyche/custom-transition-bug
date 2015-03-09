@@ -32,6 +32,7 @@
     self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:reuseIdentifier];
     if (self) {
         _accessorySwitch = [[UISwitch alloc] init];
+        [_accessorySwitch addTarget:self action:@selector(switchValueChanged:) forControlEvents:UIControlEventValueChanged];
         self.accessoryView = _accessorySwitch;
         self.selectionStyle = UITableViewCellSelectionStyleNone;
     }
