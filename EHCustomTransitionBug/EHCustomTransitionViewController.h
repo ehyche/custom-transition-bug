@@ -7,12 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "EHCustomTransitionStyle.h"
+#import "EHCustomPresentationDefinitions.h"
 
 @protocol EHCustomTransitionViewController <NSObject>
 
 @required
 
-@property(nonatomic, assign) EHCustomTransitionStyle customTransitionStyle;
+@property(nonatomic, assign) EHCustomPresentationStyle customPresentationStyle;
+@property(nonatomic, assign) EHCustomTransitionStyle   customTransitionStyle;
 
 @end

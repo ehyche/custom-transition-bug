@@ -7,13 +7,11 @@
 //
 
 #import "EHViewController.h"
-#import "GPCoverVerticalAnimationController.h"
-#import "GPCrossDissolveAnimationController.h"
-#import "GPFadeWithBlurredBackgroundAnimationController.h"
 #import "EHModalPresentationStyleInfo.h"
 #import "EHModalTransitionStyleInfo.h"
-#import "EHCustomTransitionStyle.h"
-#import "EHCustomTransitionInfo.h"
+#import "EHCustomPresentationDefinitions.h"
+#import "EHCustomTransitionStyleInfo.h"
+#import "EHCustomPresentationStyleInfo.h"
 #import "EHBooleanSwitchCell.h"
 #import "EHNameValueDisplayCell.h"
 #import "EHNameValueChangeCell.h"
@@ -21,22 +19,32 @@
 #import "EHSelectionTableViewController.h"
 #import "EHNavigationController.h"
 #import "EHUtilities.h"
+#import "EHViewControllerAnimatedTransitioning.h"
+// Presentation controllers
+#import "EHDimPresentationController.h"
+#import "EHBlurPresentationController.h"
+#import "EHFullScreenPresentationController.h"
+// Animation controllers
+#import "EHCoverVerticalAnimationController.h"
+#import "EHCrossDissolveAnimationController.h"
+#import "EHZoomInAnimationController.h"
 
 NSInteger const kEHSectionIndexThisController = 0;
 NSInteger const kEHSectionIndexControllerToPresent = 1;
 
 NSInteger const kEHSectionCount = 2;
-NSInteger const kEHSectionThisControllerNumRows = 4;
-NSInteger const kEHSectionControllerToPresentNumRows = 4;
+NSInteger const kEHSectionThisControllerNumRows = 5;
+NSInteger const kEHSectionControllerToPresentNumRows = 5;
 
 // These are common to both sections
 NSInteger const kEHRowModalPresentationStyle = 0;
 NSInteger const kEHRowModalTransitionStyle = 1;
-NSInteger const kEHRowCustomTransitionStyle = 2;
+NSInteger const kEHRowCustomPresentationStyle = 2;
+NSInteger const kEHRowCustomTransitionStyle = 3;
 // These are rows specific to the This Controller section
-NSInteger const kEHRowDefinesPresentationContext = 3;
+NSInteger const kEHRowDefinesPresentationContext = 4;
 // These are rows specific to the Controller To Present section
-NSInteger const kEHRowWrapInNavigationController = 3;
+NSInteger const kEHRowWrapInNavigationController = 4;
 
 CGFloat const kButtonHeight = 44.0;
 CGFloat const kButtonPadding = 5.0;
@@ -44,13 +52,15 @@ CGFloat const kButtonPadding = 5.0;
 NSInteger const kBooleanCellTagDefinesPresentationContext = 100;
 NSInteger const kBooleanCellTagWrapInNavigationController = 101;
 
-NSInteger const kSelectionControllerTagModalPresentationStyle = 200;
-NSInteger const kSelectionControllerTagModalTransitionStyle   = 201;
-NSInteger const kSelectionControllerTagCustomTransitionStyle  = 202;
+NSInteger const kSelectionControllerTagModalPresentationStyle  = 200;
+NSInteger const kSelectionControllerTagModalTransitionStyle    = 201;
+NSInteger const kSelectionControllerTagCustomPresentationStyle = 202;
+NSInteger const kSelectionControllerTagCustomTransitionStyle   = 203;
 
-static NSString * const kEHModalPresentationStyleString = @"UIModalPresentationStyle";
-static NSString * const kEHModalTransitionStyleString   = @"UIModalTransitionStyle";
-static NSString * const kEHCustomTransitionStyleString  = @"Custom Transition Style";
+static NSString * const kEHModalPresentationStyleString  = @"UIModalPresentationStyle";
+static NSString * const kEHModalTransitionStyleString    = @"UIModalTransitionStyle";
+static NSString * const kEHCustomPresentationStyleString = @"Custom Presentation Style";
+static NSString * const kEHCustomTransitionStyleString   = @"Custom Transition Style";
 
 @interface EHViewController() <UIViewControllerTransitioningDelegate,
                                EHBooleanSwitchCellDelegate,
@@ -58,21 +68,25 @@ static NSString * const kEHCustomTransitionStyleString  = @"Custom Transition St
 
 @property(nonatomic, strong) UILabel *headerView;
 @property(nonatomic, strong) UIButton *presentButton;
+@property(nonatomic, strong) UIButton *pushButton;
 @property(nonatomic, strong) UIButton *doneButton;
 @property(nonatomic, strong) UIView *footerContainerView;
 @property(nonatomic, copy)   NSArray *modalPresentationStyles;
 @property(nonatomic, copy)   NSArray *modalTransitionStyles;
+@property(nonatomic, copy)   NSArray *customPresentationStyles;
 @property(nonatomic, copy)   NSArray *customTransitionStyles;
 
-@property(nonatomic, assign) UIModalPresentationStyle modalPresentationStyleToUse;
-@property(nonatomic, assign) UIModalTransitionStyle   modalTransitionStyleToUse;
-@property(nonatomic, assign) EHCustomTransitionStyle customTransitionStyleToUse;
-@property(nonatomic, assign) BOOL                     shouldWrapInNavigationController;
+@property(nonatomic, assign) UIModalPresentationStyle  modalPresentationStyleToUse;
+@property(nonatomic, assign) UIModalTransitionStyle    modalTransitionStyleToUse;
+@property(nonatomic, assign) EHCustomPresentationStyle customPresentationStyleToUse;
+@property(nonatomic, assign) EHCustomTransitionStyle   customTransitionStyleToUse;
+@property(nonatomic, assign) BOOL                      shouldWrapInNavigationController;
 
 @end
 
 @implementation EHViewController
 
+@synthesize customPresentationStyle;
 @synthesize customTransitionStyle;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style {
@@ -93,6 +107,12 @@ static NSString * const kEHCustomTransitionStyleString  = @"Custom Transition St
         [self.presentButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
         self.presentButton.backgroundColor = [UIColor greenColor];
         [self.presentButton addTarget:self action:@selector(presentButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
+
+        self.pushButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [self.pushButton setTitle:@"Push" forState:UIControlStateNormal];
+        [self.pushButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        self.pushButton.backgroundColor = [UIColor blueColor];
+        [self.pushButton addTarget:self action:@selector(pushButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
 
         CGFloat footerContainerViewHeight = kButtonPadding + (2.0 * kButtonHeight);
         CGRect footerViewFrame = CGRectMake(0.0, 0.0, 320.0, footerContainerViewHeight);
@@ -123,11 +143,14 @@ static NSString * const kEHCustomTransitionStyleString  = @"Custom Transition St
                                        [EHModalTransitionStyleInfo infoWithStyle:UIModalTransitionStyleCrossDissolve name:@"UIModalTransitionStyleCrossDissolve"],
                                        [EHModalTransitionStyleInfo infoWithStyle:UIModalTransitionStylePartialCurl name:@"UIModalTransitionStylePartialCurl"]
                                        ];
-        self.customTransitionStyles = @[[EHCustomTransitionInfo infoWithStyle:EHCustomTransitionStyleNone name:@"None"],
-                                        [EHCustomTransitionInfo infoWithStyle:EHCustomTransitionStyleCoverVertical name:@"Custom CoverVertical Look-alike"],
-                                        [EHCustomTransitionInfo infoWithStyle:EHCustomTransitionStyleCrossDissolve name:@"Custom CrossDissolve Look-alike"],
-                                        [EHCustomTransitionInfo infoWithStyle:EHCustomTransitionStyleFadeInWithDimmedBackground name:@"Custom Fade-in with Dimmed Background"]
-                                        ];
+        self.customTransitionStyles = @[[EHCustomTransitionStyleInfo infoWithStyle:EHCustomTransitionStyleCoverVertical name:@"Slide Up From Bottom"],
+                                        [EHCustomTransitionStyleInfo infoWithStyle:EHCustomTransitionStyleCrossDissolve name:@"Fade In"],
+                                        [EHCustomTransitionStyleInfo infoWithStyle:EHCustomTransitionStyleZoomInWithBounce name:@"Zoom In"]
+                                       ];
+        self.customPresentationStyles = @[[EHCustomPresentationStyleInfo infoWithStyle:EHCustomPresentationStyleFullScreen name:@"Full Screen"],
+                                          [EHCustomPresentationStyleInfo infoWithStyle:EHCustomPresentationStyleCustomSizeDimmedBackground name:@"Custom Size With Dimmed Background"],
+                                          [EHCustomPresentationStyleInfo infoWithStyle:EHCustomPresentationStyleCustomSizeBlurredBackground name:@"Custom Size With Blurred Background"]
+                                         ];
     }
 
     return self;
@@ -145,27 +168,36 @@ static NSString * const kEHCustomTransitionStyleString  = @"Custom Transition St
         UIViewController *presentedViewController = self.presentingViewController.presentedViewController;
         self.modalPresentationStyleToUse = presentedViewController.modalPresentationStyle;
         self.modalTransitionStyleToUse = presentedViewController.modalTransitionStyle;
+        self.customPresentationStyleToUse = [self customPresentationStyleForViewController:presentedViewController];
         self.customTransitionStyleToUse = [self customTransitionStyleForViewController:presentedViewController];
-
     } else {
         self.modalPresentationStyleToUse = UIModalPresentationFullScreen;
         self.modalTransitionStyleToUse = UIModalTransitionStyleCoverVertical;
-        self.customTransitionStyleToUse = EHCustomTransitionStyleNone;
+        self.customPresentationStyleToUse = EHCustomPresentationStyleFullScreen;
+        self.customTransitionStyleToUse = EHCustomTransitionStyleCoverVertical;
     }
     self.shouldWrapInNavigationController = (self.navigationController != nil);
-
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
 
     if (self.navigationController != nil) {
+        // Set the title
         self.navigationItem.title = [NSString stringWithFormat:@"Controller %@", @(self.controllerIndex)];
-        self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Present"
+        // Set the left bar button items
+        UIBarButtonItem *presentBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Present"
                                                                                  style:UIBarButtonItemStylePlain
                                                                                 target:self
                                                                                 action:@selector(presentButtonTapped:)];
-        if (self.controllerIndex > 0) {
+        UIBarButtonItem *pushBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Push"
+                                                                              style:UIBarButtonItemStylePlain
+                                                                             target:self
+                                                                             action:@selector(pushButtonTapped:)];
+        self.navigationItem.leftItemsSupplementBackButton = YES;
+        self.navigationItem.leftBarButtonItems = @[presentBarButtonItem, pushBarButtonItem];
+        // Add a Done button if necessary
+        if (self.presentingViewController != nil) {
             self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                                                                                                    target:self
                                                                                                    action:@selector(doneButtonTapped:)];
@@ -227,6 +259,9 @@ static NSString * const kEHCustomTransitionStyleString  = @"Custom Transition St
         } else if (indexPath.row == kEHRowModalTransitionStyle) {
             text = kEHModalTransitionStyleString;
             detailText = [self ourModalTransitionStyle];
+        } else if (indexPath.row == kEHRowCustomPresentationStyle) {
+            text = kEHCustomPresentationStyleString;
+            detailText = [self ourCustomPresentationStyle];
         } else if (indexPath.row == kEHRowCustomTransitionStyle) {
             text = kEHCustomTransitionStyleString;
             detailText = [self ourCustomTransitionStyle];
@@ -242,6 +277,9 @@ static NSString * const kEHCustomTransitionStyleString  = @"Custom Transition St
         } else if (indexPath.row == kEHRowModalTransitionStyle) {
             text = kEHModalTransitionStyleString;
             detailText = [self stringForModalTransitionStyle:self.modalTransitionStyleToUse];
+        } else if (indexPath.row == kEHRowCustomPresentationStyle) {
+            text = kEHCustomPresentationStyleString;
+            detailText = [self stringForCustomPresentationStyle:self.customPresentationStyleToUse];
         } else if (indexPath.row == kEHRowCustomTransitionStyle) {
             text = kEHCustomTransitionStyleString;
             detailText = [self stringForCustomTransitionStyle:self.customTransitionStyleToUse];
@@ -260,6 +298,8 @@ static NSString * const kEHCustomTransitionStyleString  = @"Custom Transition St
     if ([cell isKindOfClass:[EHBooleanSwitchCell class]]) {
         EHBooleanSwitchCell *switchCell = (EHBooleanSwitchCell *)cell;
         switchCell.on = cellOn;
+        switchCell.tag = booleanCellTag;
+        switchCell.delegate = self;
     }
 
     return cell;
@@ -290,6 +330,9 @@ static NSString * const kEHCustomTransitionStyleString  = @"Custom Transition St
         } else if (indexPath.row == kEHRowModalTransitionStyle) {
             // Let the user choose a modal transition style
             [self showModalTransitionStylesSelectionController];
+        } else if (indexPath.row == kEHRowCustomPresentationStyle) {
+            // Let the user choose a custom presentation style
+            [self showCustomPresentationStylesSelectionController];
         } else if (indexPath.row == kEHRowCustomTransitionStyle) {
             // Let the user choose the custom transition style
             [self showCustomTransitionStyleSelectionController];
@@ -302,48 +345,39 @@ static NSString * const kEHCustomTransitionStyleString  = @"Custom Transition St
 - (id <UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented
                                                                    presentingController:(UIViewController *)presenting
                                                                        sourceController:(UIViewController *)source {
-    id<UIViewControllerAnimatedTransitioning> animator = nil;
-
     EHCustomTransitionStyle style = [self customTransitionStyleForViewController:presented];
-
-    if (style == EHCustomTransitionStyleCoverVertical) {
-        GPCoverVerticalAnimationController *coverVertical = [[GPCoverVerticalAnimationController alloc] init];
-        coverVertical.dismissal = NO;
-        animator = coverVertical;
-    } else if (style == EHCustomTransitionStyleCrossDissolve) {
-        GPCrossDissolveAnimationController *crossDissolve = [[GPCrossDissolveAnimationController alloc] init];
-        crossDissolve.dismissal = NO;
-        animator = crossDissolve;
-    } else if (style == EHCustomTransitionStyleFadeInWithDimmedBackground) {
-        GPFadeWithBlurredBackgroundAnimationController *fade = [[GPFadeWithBlurredBackgroundAnimationController alloc] init];
-        fade.dismissal = NO;
-        animator = fade;
-    }
+    id<EHViewControllerAnimatedTransitioning>animator = [EHViewController animatorForCustomTransitionStyle:style];
+    animator.presenting = YES;
 
     return animator;
 }
 
 - (id <UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed {
-    id<UIViewControllerAnimatedTransitioning> animator = nil;
-
     EHCustomTransitionStyle style = [self customTransitionStyleForViewController:dismissed];
-
-    if (style == EHCustomTransitionStyleCoverVertical) {
-        GPCoverVerticalAnimationController *coverVertical = [[GPCoverVerticalAnimationController alloc] init];
-        coverVertical.dismissal = YES;
-        animator = coverVertical;
-    } else if (style == EHCustomTransitionStyleCrossDissolve) {
-        GPCrossDissolveAnimationController *crossDissolve = [[GPCrossDissolveAnimationController alloc] init];
-        crossDissolve.dismissal = YES;
-        animator = crossDissolve;
-    } else if (style == EHCustomTransitionStyleFadeInWithDimmedBackground) {
-        GPFadeWithBlurredBackgroundAnimationController *fade = [[GPFadeWithBlurredBackgroundAnimationController alloc] init];
-        fade.dismissal = YES;
-        animator = fade;
-    }
+    id<EHViewControllerAnimatedTransitioning>animator = [EHViewController animatorForCustomTransitionStyle:style];
+    animator.presenting = NO;
 
     return animator;
 }
+
+- (UIPresentationController *)presentationControllerForPresentedViewController:(UIViewController *)presented
+                                                      presentingViewController:(UIViewController *)presenting
+                                                          sourceViewController:(UIViewController *)source {
+    UIPresentationController *controller = nil;
+
+    EHCustomPresentationStyle style = [self customPresentationStyleForViewController:presented];
+
+    if (style == EHCustomPresentationStyleFullScreen) {
+        controller = [[EHFullScreenPresentationController alloc] initWithPresentedViewController:presented presentingViewController:presenting];
+    } else if (style == EHCustomPresentationStyleCustomSizeDimmedBackground) {
+        controller = [[EHDimPresentationController alloc] initWithPresentedViewController:presented presentingViewController:presenting];
+    } else if (style == EHCustomPresentationStyleCustomSizeBlurredBackground) {
+        controller = [[EHBlurPresentationController alloc] initWithPresentedViewController:presented presentingViewController:presenting];
+    }
+
+    return controller;
+}
+
 
 #pragma mark - EHBooleanSwitchCellDelegate methods
 
@@ -375,6 +409,11 @@ static NSString * const kEHCustomTransitionStyleString  = @"Custom Transition St
         self.modalTransitionStyleToUse = styleData;
         [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:kEHRowModalTransitionStyle inSection:kEHSectionIndexControllerToPresent]]
                               withRowAnimation:UITableViewRowAnimationNone];
+    } else if (controller.tag == kSelectionControllerTagCustomPresentationStyle) {
+        EHCustomPresentationStyle styleData = [selectedOption.data integerValue];
+        self.customPresentationStyleToUse = styleData;
+        [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:kEHRowCustomPresentationStyle inSection:kEHSectionIndexControllerToPresent]]
+                              withRowAnimation:UITableViewRowAnimationNone];
     } else if (controller.tag == kSelectionControllerTagCustomTransitionStyle) {
         EHCustomTransitionStyle styleData = [selectedOption.data integerValue];
         self.customTransitionStyleToUse = styleData;
@@ -396,15 +435,23 @@ static NSString * const kEHCustomTransitionStyleString  = @"Custom Transition St
         controllerToPresent = navController;
     }
 
-    controllerToPresent.modalPresentationStyle = self.modalPresentationStyleToUse;
-    controllerToPresent.modalTransitionStyle   = self.modalTransitionStyleToUse;
-    controllerToPresent.customTransitionStyle  = self.customTransitionStyleToUse;
+    controllerToPresent.modalPresentationStyle  = self.modalPresentationStyleToUse;
+    controllerToPresent.modalTransitionStyle    = self.modalTransitionStyleToUse;
+    controllerToPresent.customPresentationStyle = self.customPresentationStyleToUse;
+    controllerToPresent.customTransitionStyle   = self.customTransitionStyleToUse;
 
     controllerToPresent.transitioningDelegate  = (controllerToPresent.modalPresentationStyle == UIModalPresentationCustom ? self : nil);
 
     [self presentViewController:controllerToPresent animated:YES completion:^{
         NSLog(@"Presentation of controller completion block");
     }];
+}
+
+- (void)pushButtonTapped:(id)sender {
+    EHViewController *controller = [[EHViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    controller.controllerIndex = self.controllerIndex + 1;
+
+    [self.navigationController pushViewController:controller animated:YES];
 }
 
 - (void)doneButtonTapped:(id)sender {
@@ -439,10 +486,23 @@ static NSString * const kEHCustomTransitionStyleString  = @"Custom Transition St
     return str;
 }
 
+- (NSString *)stringForCustomPresentationStyle:(EHCustomPresentationStyle)style {
+    NSString *str = @"Unknown";
+
+    for (EHCustomPresentationStyleInfo *info in self.customPresentationStyles) {
+        if (info.style == style) {
+            str = info.name;
+            break;
+        }
+    }
+
+    return str;
+}
+
 - (NSString *)stringForCustomTransitionStyle:(EHCustomTransitionStyle)style {
     NSString *str = @"Unknown";
 
-    for (EHCustomTransitionInfo *info in self.customTransitionStyles) {
+    for (EHCustomTransitionStyleInfo *info in self.customTransitionStyles) {
         if (info.style == style) {
             str = info.name;
             break;
@@ -469,6 +529,17 @@ static NSString * const kEHCustomTransitionStyleString  = @"Custom Transition St
     if (self.presentingViewController != nil) {
         UIViewController *presentedViewController = self.presentingViewController.presentedViewController;
         style = [self stringForModalTransitionStyle:presentedViewController.modalTransitionStyle];
+    }
+
+    return style;
+}
+
+- (NSString *)ourCustomPresentationStyle {
+    NSString *style = @"Not Presented";
+
+    if (self.presentingViewController != nil) {
+        UIViewController *presentedViewController = self.presentingViewController.presentedViewController;
+        style = [self stringForCustomPresentationStyle:[self customPresentationStyleForViewController:presentedViewController]];
     }
 
     return style;
@@ -517,11 +588,26 @@ static NSString * const kEHCustomTransitionStyleString  = @"Custom Transition St
     return [NSArray arrayWithArray:tmpOptions];
 }
 
+- (NSArray *)selectionOptionsFromCustomPresentationStyles {
+    NSUInteger numOptions = self.customPresentationStyles.count;
+    NSMutableArray *tmpOptions = [NSMutableArray arrayWithCapacity:numOptions];
+    for (NSUInteger i = 0; i < numOptions; i++) {
+        EHCustomPresentationStyleInfo *ithInfo = self.customPresentationStyles[i];
+        EHSelectionOption *ithOption = [[EHSelectionOption alloc] init];
+        ithOption.text = ithInfo.name;
+        ithOption.selected = (ithInfo.style == self.customPresentationStyleToUse);
+        ithOption.data = @(ithInfo.style);
+        [tmpOptions addObject:ithOption];
+    }
+
+    return [NSArray arrayWithArray:tmpOptions];
+}
+
 - (NSArray *)selectionOptionsFromCustomTransitionStyles {
     NSUInteger numOptions = self.customTransitionStyles.count;
     NSMutableArray *tmpOptions = [NSMutableArray arrayWithCapacity:numOptions];
     for (NSUInteger i = 0; i < numOptions; i++) {
-        EHCustomTransitionInfo *ithInfo = self.customTransitionStyles[i];
+        EHCustomTransitionStyleInfo *ithInfo = self.customTransitionStyles[i];
         EHSelectionOption *ithOption = [[EHSelectionOption alloc] init];
         ithOption.text = ithInfo.name;
         ithOption.selected = (ithInfo.style == self.customTransitionStyleToUse);
@@ -552,6 +638,16 @@ static NSString * const kEHCustomTransitionStyleString  = @"Custom Transition St
     [self.navigationController pushViewController:controller animated:YES];
 }
 
+- (void)showCustomPresentationStylesSelectionController {
+    EHSelectionTableViewController *controller = [[EHSelectionTableViewController alloc] initWithTitle:kEHCustomPresentationStyleString
+                                                                                          sectionTitle:nil
+                                                                                      selectionOptions:[self selectionOptionsFromCustomPresentationStyles]
+                                                                                     canSelectMultiple:NO];
+    controller.tag = kSelectionControllerTagCustomPresentationStyle;
+    controller.delegate = self;
+    [self.navigationController pushViewController:controller animated:YES];
+}
+
 - (void)showCustomTransitionStyleSelectionController {
     EHSelectionTableViewController *controller = [[EHSelectionTableViewController alloc] initWithTitle:kEHCustomTransitionStyleString
                                                                                           sectionTitle:nil
@@ -562,8 +658,19 @@ static NSString * const kEHCustomTransitionStyleString  = @"Custom Transition St
     [self.navigationController pushViewController:controller animated:YES];
 }
 
+- (EHCustomPresentationStyle)customPresentationStyleForViewController:(UIViewController *)viewController {
+    EHCustomPresentationStyle style = EHCustomPresentationStyleFullScreen;
+
+    if ([viewController conformsToProtocol:@protocol(EHCustomTransitionViewController)]) {
+        UIViewController<EHCustomTransitionViewController> *customTransitionViewController = (UIViewController<EHCustomTransitionViewController> *)viewController;
+        style = customTransitionViewController.customPresentationStyle;
+    }
+
+    return style;
+}
+
 - (EHCustomTransitionStyle)customTransitionStyleForViewController:(UIViewController *)viewController {
-    EHCustomTransitionStyle style = EHCustomTransitionStyleNone;
+    EHCustomTransitionStyle style = EHCustomTransitionStyleCoverVertical;
 
     if ([viewController conformsToProtocol:@protocol(EHCustomTransitionViewController)]) {
         UIViewController<EHCustomTransitionViewController> *customTransitionViewController = (UIViewController<EHCustomTransitionViewController> *)viewController;
@@ -571,6 +678,20 @@ static NSString * const kEHCustomTransitionStyleString  = @"Custom Transition St
     }
 
     return style;
+}
+
++ (id<EHViewControllerAnimatedTransitioning>)animatorForCustomTransitionStyle:(EHCustomTransitionStyle)style {
+    id<EHViewControllerAnimatedTransitioning> animator = nil;
+
+    if (style == EHCustomTransitionStyleCoverVertical) {
+        animator = [[EHCoverVerticalAnimationController alloc] init];
+    } else if (style == EHCustomTransitionStyleCrossDissolve) {
+        animator = [[EHCrossDissolveAnimationController alloc] init];
+    } else if (style == EHCustomTransitionStyleZoomInWithBounce) {
+        animator = [[EHZoomInAnimationController alloc] init];
+    }
+
+    return animator;
 }
 
 @end

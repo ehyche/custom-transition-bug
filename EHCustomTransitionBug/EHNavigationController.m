@@ -10,6 +10,7 @@
 
 @implementation EHNavigationController
 
+@synthesize customPresentationStyle;
 @synthesize customTransitionStyle;
 
 @end
