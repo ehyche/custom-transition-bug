@@ -70,7 +70,7 @@ static NSString * const kEHCustomTransitionStyleString   = @"Custom Transition S
 @property(nonatomic, strong) UIButton *presentButton;
 @property(nonatomic, strong) UIButton *pushButton;
 @property(nonatomic, strong) UIButton *doneButton;
-@property(nonatomic, strong) UIView *footerContainerView;
+@property(nonatomic, strong) UIView *buttonContainerView;
 @property(nonatomic, copy)   NSArray *modalPresentationStyles;
 @property(nonatomic, copy)   NSArray *modalTransitionStyles;
 @property(nonatomic, copy)   NSArray *customPresentationStyles;
@@ -97,37 +97,52 @@ static NSString * const kEHCustomTransitionStyleString   = @"Custom Transition S
         self.headerView.textAlignment = NSTextAlignmentCenter;
 
         self.doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        self.doneButton.translatesAutoresizingMaskIntoConstraints = NO;
         [self.doneButton setTitle:@"Done" forState:UIControlStateNormal];
-        [self.doneButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-        self.doneButton.backgroundColor = [UIColor redColor];
+        [self.doneButton setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
         [self.doneButton addTarget:self action:@selector(doneButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
 
         self.presentButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        self.presentButton.translatesAutoresizingMaskIntoConstraints = NO;
         [self.presentButton setTitle:@"Present" forState:UIControlStateNormal];
-        [self.presentButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-        self.presentButton.backgroundColor = [UIColor greenColor];
+        [self.presentButton setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
         [self.presentButton addTarget:self action:@selector(presentButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
 
         self.pushButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        self.pushButton.translatesAutoresizingMaskIntoConstraints = NO;
         [self.pushButton setTitle:@"Push" forState:UIControlStateNormal];
-        [self.pushButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-        self.pushButton.backgroundColor = [UIColor blueColor];
+        [self.pushButton setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
         [self.pushButton addTarget:self action:@selector(pushButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
 
-        CGFloat footerContainerViewHeight = kButtonPadding + (2.0 * kButtonHeight);
-        CGRect footerViewFrame = CGRectMake(0.0, 0.0, 320.0, footerContainerViewHeight);
-        self.footerContainerView = [[UIView alloc] initWithFrame:footerViewFrame];
-        self.footerContainerView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        CGRect buttonContainerFrame = CGRectMake(0.0, 0.0, 320.0, kButtonHeight);
+        self.buttonContainerView = [[UIView alloc] initWithFrame:buttonContainerFrame];
+        self.buttonContainerView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 
-        CGRect presentButtonFrame = CGRectMake(0.0, 0.0, footerViewFrame.size.width, kButtonHeight);
-        self.presentButton.frame = presentButtonFrame;
-        self.presentButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin;
-        [self.footerContainerView addSubview:self.presentButton];
+        [self.buttonContainerView addSubview:self.presentButton];
+        [self.buttonContainerView addSubview:self.pushButton];
+        [self.buttonContainerView addSubview:self.doneButton];
 
-        CGRect doneButtonFrame = CGRectMake(0.0, kButtonHeight + kButtonPadding, footerViewFrame.size.width, kButtonHeight);
-        self.doneButton.frame = doneButtonFrame;
-        self.doneButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
-        [self.footerContainerView addSubview:self.doneButton];
+        // Add constraints
+        NSDictionary *views = @{@"present" : self.presentButton,
+                                @"push"    : self.pushButton,
+                                @"done"    : self.doneButton};
+        [self.buttonContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[present]|"
+                                                                                         options:0
+                                                                                         metrics:nil
+                                                                                           views:views]];
+        [self.buttonContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[push]|"
+                                                                                         options:0
+                                                                                         metrics:nil
+                                                                                           views:views]];
+        [self.buttonContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[done]|"
+                                                                                         options:0
+                                                                                         metrics:nil
+                                                                                           views:views]];
+        // Then layout the buttons left to right with equal width
+        [self.buttonContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[present][push(==present)][done(==present)]|"
+                                                                                         options:0
+                                                                                         metrics:nil
+                                                                                           views:views]];
 
         self.modalPresentationStyles = @[[EHModalPresentationStyleInfo infoWithStyle:UIModalPresentationFullScreen name:@"UIModalPresentationFullScreen"],
                                          [EHModalPresentationStyleInfo infoWithStyle:UIModalPresentationPageSheet name:@"UIModalPresentationPageSheet"],
@@ -176,11 +191,12 @@ static NSString * const kEHCustomTransitionStyleString   = @"Custom Transition S
         self.customPresentationStyleToUse = EHCustomPresentationStyleFullScreen;
         self.customTransitionStyleToUse = EHCustomTransitionStyleCoverVertical;
     }
-    self.shouldWrapInNavigationController = (self.navigationController != nil);
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+
+    self.shouldWrapInNavigationController = (self.navigationController != nil);
 
     if (self.navigationController != nil) {
         // Set the title
@@ -208,7 +224,7 @@ static NSString * const kEHCustomTransitionStyleString   = @"Custom Transition S
         self.headerView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 
         self.tableView.tableHeaderView = self.headerView;
-        self.tableView.tableFooterView = self.footerContainerView;
+        self.tableView.tableFooterView = self.buttonContainerView;
     }
 }
 
