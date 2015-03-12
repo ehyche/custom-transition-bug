@@ -229,6 +229,7 @@ static NSString * const kEHPreferredContentSizeHeightString = @"Preferred Conten
     if (self.navigationController != nil) {
         // Set the title
         self.navigationItem.title = [NSString stringWithFormat:@"Controller %@", @(self.controllerIndex)];
+        self.navigationItem.prompt = self.navigationController.description;
         // Set the left bar button items
         UIBarButtonItem *presentBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Present"
                                                                                  style:UIBarButtonItemStylePlain
