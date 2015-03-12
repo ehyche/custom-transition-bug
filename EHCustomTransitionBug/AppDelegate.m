@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 #import "EHViewController.h"
+#import "EHNavigationController.h"
 
 @interface AppDelegate ()
 
@@ -23,7 +24,7 @@
 
     EHViewController *controller = [[EHViewController alloc] initWithStyle:UITableViewStyleGrouped];
 
-    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
+    UINavigationController *navController = [[EHNavigationController alloc] initWithRootViewController:controller];
 
     self.window.rootViewController = navController;
 

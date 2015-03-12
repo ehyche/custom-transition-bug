@@ -24,11 +24,14 @@
 		FD75A2721AA8AF12001363DA /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FD75A2711AA8AF12001363DA /* Images.xcassets */; };
 		FD75A2751AA8AF12001363DA /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = FD75A2731AA8AF12001363DA /* LaunchScreen.xib */; };
 		FD75A2811AA8AF13001363DA /* EHCustomTransitionBugTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FD75A2801AA8AF13001363DA /* EHCustomTransitionBugTests.m */; };
+		FDA3A80E1AB15F0700A709BA /* EHControllerInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = FDA3A80D1AB15F0700A709BA /* EHControllerInfo.m */; };
 		FDAC4C171AAE6194004D3983 /* EHFullScreenPresentationController.m in Sources */ = {isa = PBXBuildFile; fileRef = FDAC4C161AAE6194004D3983 /* EHFullScreenPresentationController.m */; };
 		FDAC4C1E1AAE69BC004D3983 /* EHCoverVerticalAnimationController.m in Sources */ = {isa = PBXBuildFile; fileRef = FDAC4C1D1AAE69BC004D3983 /* EHCoverVerticalAnimationController.m */; };
 		FDAC4C211AAE7132004D3983 /* EHCrossDissolveAnimationController.m in Sources */ = {isa = PBXBuildFile; fileRef = FDAC4C201AAE7132004D3983 /* EHCrossDissolveAnimationController.m */; };
 		FDAC4C241AAE7409004D3983 /* EHZoomInAnimationController.m in Sources */ = {isa = PBXBuildFile; fileRef = FDAC4C231AAE7409004D3983 /* EHZoomInAnimationController.m */; };
 		FDAC4C281AAE7A2D004D3983 /* EHCustomPresentationStyleInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = FDAC4C271AAE7A2D004D3983 /* EHCustomPresentationStyleInfo.m */; };
+		FDB330A11AB258C900F963B7 /* EHControllerCounter.m in Sources */ = {isa = PBXBuildFile; fileRef = FDB330A01AB258C900F963B7 /* EHControllerCounter.m */; };
+		FDBFCCB61AAF9FE2002B6B53 /* EHStepperCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FDBFCCB51AAF9FE2002B6B53 /* EHStepperCell.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -78,6 +81,8 @@
 		FD75A27A1AA8AF13001363DA /* EHCustomTransitionBugTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EHCustomTransitionBugTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FD75A27F1AA8AF13001363DA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FD75A2801AA8AF13001363DA /* EHCustomTransitionBugTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EHCustomTransitionBugTests.m; sourceTree = "<group>"; };
+		FDA3A80C1AB15F0700A709BA /* EHControllerInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EHControllerInfo.h; sourceTree = "<group>"; };
+		FDA3A80D1AB15F0700A709BA /* EHControllerInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EHControllerInfo.m; sourceTree = "<group>"; };
 		FDAC4C151AAE6194004D3983 /* EHFullScreenPresentationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EHFullScreenPresentationController.h; sourceTree = "<group>"; };
 		FDAC4C161AAE6194004D3983 /* EHFullScreenPresentationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EHFullScreenPresentationController.m; sourceTree = "<group>"; };
 		FDAC4C181AAE6244004D3983 /* EHPresentationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EHPresentationController.h; sourceTree = "<group>"; };
@@ -91,6 +96,10 @@
 		FDAC4C231AAE7409004D3983 /* EHZoomInAnimationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EHZoomInAnimationController.m; sourceTree = "<group>"; };
 		FDAC4C261AAE7A2D004D3983 /* EHCustomPresentationStyleInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EHCustomPresentationStyleInfo.h; sourceTree = "<group>"; };
 		FDAC4C271AAE7A2D004D3983 /* EHCustomPresentationStyleInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EHCustomPresentationStyleInfo.m; sourceTree = "<group>"; };
+		FDB3309F1AB258C900F963B7 /* EHControllerCounter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EHControllerCounter.h; sourceTree = "<group>"; };
+		FDB330A01AB258C900F963B7 /* EHControllerCounter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EHControllerCounter.m; sourceTree = "<group>"; };
+		FDBFCCB41AAF9FE2002B6B53 /* EHStepperCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EHStepperCell.h; sourceTree = "<group>"; };
+		FDBFCCB51AAF9FE2002B6B53 /* EHStepperCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EHStepperCell.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -132,6 +141,7 @@
 		FD75A2631AA8AF12001363DA /* EHCustomTransitionBug */ = {
 			isa = PBXGroup;
 			children = (
+				FDB3309E1AB2589500F963B7 /* Utility Classes */,
 				FDAC4C251AAE79EE004D3983 /* Model Classes */,
 				FDAC4C141AAE6111004D3983 /* Table View Cells */,
 				FDAC4C131AAE60EB004D3983 /* Animation Controllers */,
@@ -150,7 +160,6 @@
 				FD74F3901AAD19D200D45EA1 /* EHCustomTransitionViewController.h */,
 				FD74F3911AAD1A8D00D45EA1 /* EHNavigationController.h */,
 				FD74F3921AAD1A8D00D45EA1 /* EHNavigationController.m */,
-				FD74F3941AAD257000D45EA1 /* EHUtilities.h */,
 				FDAC4C191AAE6291004D3983 /* EHCustomPresentationDefinitions.h */,
 			);
 			path = EHCustomTransitionBug;
@@ -219,6 +228,8 @@
 				FD5E962F1AAB6D2200C0AA9D /* EHNameValueDisplayCell.m */,
 				FD5E96311AAB6DC700C0AA9D /* EHNameValueChangeCell.h */,
 				FD5E96321AAB6DC700C0AA9D /* EHNameValueChangeCell.m */,
+				FDBFCCB41AAF9FE2002B6B53 /* EHStepperCell.h */,
+				FDBFCCB51AAF9FE2002B6B53 /* EHStepperCell.m */,
 			);
 			name = "Table View Cells";
 			sourceTree = "<group>";
@@ -234,8 +245,20 @@
 				FD702A891AA96194003F4FAD /* EHCustomTransitionStyleInfo.m */,
 				FDAC4C261AAE7A2D004D3983 /* EHCustomPresentationStyleInfo.h */,
 				FDAC4C271AAE7A2D004D3983 /* EHCustomPresentationStyleInfo.m */,
+				FDA3A80C1AB15F0700A709BA /* EHControllerInfo.h */,
+				FDA3A80D1AB15F0700A709BA /* EHControllerInfo.m */,
 			);
 			name = "Model Classes";
+			sourceTree = "<group>";
+		};
+		FDB3309E1AB2589500F963B7 /* Utility Classes */ = {
+			isa = PBXGroup;
+			children = (
+				FD74F3941AAD257000D45EA1 /* EHUtilities.h */,
+				FDB3309F1AB258C900F963B7 /* EHControllerCounter.h */,
+				FDB330A01AB258C900F963B7 /* EHControllerCounter.m */,
+			);
+			name = "Utility Classes";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -339,6 +362,8 @@
 			files = (
 				FD702A7F1AA8FA34003F4FAD /* EHModalTransitionStyleInfo.m in Sources */,
 				FD702A901AA96518003F4FAD /* EHSelectionOption.m in Sources */,
+				FDA3A80E1AB15F0700A709BA /* EHControllerInfo.m in Sources */,
+				FDB330A11AB258C900F963B7 /* EHControllerCounter.m in Sources */,
 				FDAC4C211AAE7132004D3983 /* EHCrossDissolveAnimationController.m in Sources */,
 				FD5E962D1AAB6AD300C0AA9D /* EHBooleanSwitchCell.m in Sources */,
 				FDAC4C241AAE7409004D3983 /* EHZoomInAnimationController.m in Sources */,
@@ -347,6 +372,7 @@
 				FD74F38F1AAD116800D45EA1 /* EHViewController.m in Sources */,
 				FD1CF3061AAD52B5004B2096 /* EHDimPresentationController.m in Sources */,
 				FDAC4C1E1AAE69BC004D3983 /* EHCoverVerticalAnimationController.m in Sources */,
+				FDBFCCB61AAF9FE2002B6B53 /* EHStepperCell.m in Sources */,
 				FDAC4C281AAE7A2D004D3983 /* EHCustomPresentationStyleInfo.m in Sources */,
 				FD702A7C1AA8F973003F4FAD /* EHModalPresentationStyleInfo.m in Sources */,
 				FD702A8A1AA96194003F4FAD /* EHCustomTransitionStyleInfo.m in Sources */,

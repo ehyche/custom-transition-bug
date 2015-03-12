@@ -17,4 +17,9 @@
     return EHCustomPresentationStyleFullScreen;
 }
 
++ (CGSize)defaultPresentedSizeForViewController:(UIViewController *)controller {
+    UIScreen *mainScreen = [UIScreen mainScreen];
+    return mainScreen.bounds.size;
+}
+
 @end

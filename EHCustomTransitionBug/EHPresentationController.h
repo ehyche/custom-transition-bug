@@ -13,6 +13,8 @@
 
 @required
 
++ (CGSize)defaultPresentedSizeForViewController:(UIViewController *)controller;
+
 + (EHCustomPresentationStyle)customPresentationStyle;
 
 @end

@@ -31,6 +31,18 @@ static CGFloat const kEHDimPresentationControllerMinimumMargin = 20.0;
     return EHCustomPresentationStyleCustomSizeDimmedBackground;
 }
 
++ (CGSize)defaultPresentedSizeForViewController:(UIViewController *)controller {
+    CGSize defaultSize = CGSizeZero;
+
+    if (controller.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular) {
+        defaultSize = CGSizeMake(kEHDimPresentationControllerDefaultWidthRegular, kEHDimPresentationControllerDefaultHeightRegular);
+    } else if (controller.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact) {
+        defaultSize = CGSizeMake(kEHDimPresentationControllerDefaultWidthCompact, kEHDimPresentationControllerDefaultHeightCompact);
+    }
+
+    return defaultSize;
+}
+
 #pragma mark - UIPresentationController methods
 
 - (instancetype)initWithPresentedViewController:(UIViewController *)presentedViewController

@@ -15,11 +15,14 @@
 #import "EHBooleanSwitchCell.h"
 #import "EHNameValueDisplayCell.h"
 #import "EHNameValueChangeCell.h"
+#import "EHStepperCell.h"
 #import "EHSelectionOption.h"
 #import "EHSelectionTableViewController.h"
 #import "EHNavigationController.h"
 #import "EHUtilities.h"
 #import "EHViewControllerAnimatedTransitioning.h"
+#import "EHControllerInfo.h"
+#import "EHControllerCounter.h"
 // Presentation controllers
 #import "EHDimPresentationController.h"
 #import "EHBlurPresentationController.h"
@@ -31,20 +34,24 @@
 
 NSInteger const kEHSectionIndexThisController = 0;
 NSInteger const kEHSectionIndexControllerToPresent = 1;
+NSInteger const kEHSectionIndexPresentedController = 2;
+NSInteger const kEHSectionIndexPresentingController = 3;
 
-NSInteger const kEHSectionCount = 2;
-NSInteger const kEHSectionThisControllerNumRows = 5;
-NSInteger const kEHSectionControllerToPresentNumRows = 5;
+NSInteger const kEHSectionCount = 4;
+NSInteger const kEHSectionThisControllerNumRows = 7;
+NSInteger const kEHSectionControllerToPresentNumRows = 7;
 
 // These are common to both sections
 NSInteger const kEHRowModalPresentationStyle = 0;
 NSInteger const kEHRowModalTransitionStyle = 1;
 NSInteger const kEHRowCustomPresentationStyle = 2;
 NSInteger const kEHRowCustomTransitionStyle = 3;
+NSInteger const kEHRowPreferredContentSizeWidth = 4;
+NSInteger const kEHRowPreferredContentSizeHeight = 5;
 // These are rows specific to the This Controller section
-NSInteger const kEHRowDefinesPresentationContext = 4;
+NSInteger const kEHRowDefinesPresentationContext = 6;
 // These are rows specific to the Controller To Present section
-NSInteger const kEHRowWrapInNavigationController = 4;
+NSInteger const kEHRowWrapInNavigationController = 6;
 
 CGFloat const kButtonHeight = 44.0;
 CGFloat const kButtonPadding = 5.0;
@@ -52,20 +59,30 @@ CGFloat const kButtonPadding = 5.0;
 NSInteger const kBooleanCellTagDefinesPresentationContext = 100;
 NSInteger const kBooleanCellTagWrapInNavigationController = 101;
 
+NSInteger const kStepperCellTagPreferredContentSizeWidth  = 300;
+NSInteger const kStepperCellTagPreferredContentSizeHeight = 301;
+
 NSInteger const kSelectionControllerTagModalPresentationStyle  = 200;
 NSInteger const kSelectionControllerTagModalTransitionStyle    = 201;
 NSInteger const kSelectionControllerTagCustomPresentationStyle = 202;
 NSInteger const kSelectionControllerTagCustomTransitionStyle   = 203;
 
-static NSString * const kEHModalPresentationStyleString  = @"UIModalPresentationStyle";
-static NSString * const kEHModalTransitionStyleString    = @"UIModalTransitionStyle";
-static NSString * const kEHCustomPresentationStyleString = @"Custom Presentation Style";
-static NSString * const kEHCustomTransitionStyleString   = @"Custom Transition Style";
+CGFloat const kPreferredContentWidthDefaultFormSheet = 540.0;
+CGFloat const kPreferredContentHeightDefaultFormSheet = 620.0;
+
+static NSString * const kEHModalPresentationStyleString     = @"UIModalPresentationStyle";
+static NSString * const kEHModalTransitionStyleString       = @"UIModalTransitionStyle";
+static NSString * const kEHCustomPresentationStyleString    = @"Custom Presentation Style";
+static NSString * const kEHCustomTransitionStyleString      = @"Custom Transition Style";
+static NSString * const kEHPreferredContentSizeWidthString  = @"Preferred Content Size Width";
+static NSString * const kEHPreferredContentSizeHeightString = @"Preferred Content Size Height";
 
 @interface EHViewController() <UIViewControllerTransitioningDelegate,
                                EHBooleanSwitchCellDelegate,
+                               EHStepperCellDelegate,
                                EHSelectionTableViewControllerDelegate>
 
+@property(nonatomic, assign) NSUInteger controllerIndex;
 @property(nonatomic, strong) UILabel *headerView;
 @property(nonatomic, strong) UIButton *presentButton;
 @property(nonatomic, strong) UIButton *pushButton;
@@ -81,6 +98,9 @@ static NSString * const kEHCustomTransitionStyleString   = @"Custom Transition S
 @property(nonatomic, assign) EHCustomPresentationStyle customPresentationStyleToUse;
 @property(nonatomic, assign) EHCustomTransitionStyle   customTransitionStyleToUse;
 @property(nonatomic, assign) BOOL                      shouldWrapInNavigationController;
+@property(nonatomic, assign) CGSize                    preferredContentSizeToUse;
+
+@property(nonatomic, strong) NSArray *controllerInfo;
 
 @end
 
@@ -89,9 +109,15 @@ static NSString * const kEHCustomTransitionStyleString   = @"Custom Transition S
 @synthesize customPresentationStyle;
 @synthesize customTransitionStyle;
 
+- (void)dealloc {
+    [[EHControllerCounter sharedInstance] decrementControllerIndex];
+}
+
 - (instancetype)initWithStyle:(UITableViewStyle)style {
     self = [super initWithStyle:style];
     if (self) {
+        _controllerIndex = [[EHControllerCounter sharedInstance] controllerIndexWithPostIncrement];
+
         self.headerView = [[UILabel alloc] init];
         self.headerView.textColor = [UIColor blackColor];
         self.headerView.textAlignment = NSTextAlignmentCenter;
@@ -175,6 +201,7 @@ static NSString * const kEHCustomTransitionStyleString   = @"Custom Transition S
     [super viewDidLoad];
 
     [self.tableView registerClass:[EHBooleanSwitchCell class]    forCellReuseIdentifier:[EHBooleanSwitchCell reuseID]];
+    [self.tableView registerClass:[EHStepperCell class]          forCellReuseIdentifier:[EHStepperCell reuseID]];
     [self.tableView registerClass:[EHNameValueDisplayCell class] forCellReuseIdentifier:[EHNameValueDisplayCell reuseID]];
     [self.tableView registerClass:[EHNameValueChangeCell class]  forCellReuseIdentifier:[EHNameValueChangeCell reuseID]];
 
@@ -197,6 +224,7 @@ static NSString * const kEHCustomTransitionStyleString   = @"Custom Transition S
     [super viewWillAppear:animated];
 
     self.shouldWrapInNavigationController = (self.navigationController != nil);
+    self.preferredContentSizeToUse        = [self ourPreferredContentSize];
 
     if (self.navigationController != nil) {
         // Set the title
@@ -226,6 +254,18 @@ static NSString * const kEHCustomTransitionStyleString   = @"Custom Transition S
         self.tableView.tableHeaderView = self.headerView;
         self.tableView.tableFooterView = self.buttonContainerView;
     }
+
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+
+    self.controllerInfo = [EHViewController viewControllerInfo];
+    [self.tableView reloadData];
+}
+
+- (NSString *)description {
+    return [NSString stringWithFormat:@"Controller %@", @(self.controllerIndex)];
 }
 
 #pragma mark - UITableViewDataSource methods
@@ -241,6 +281,9 @@ static NSString * const kEHCustomTransitionStyleString   = @"Custom Transition S
         numRows = kEHSectionThisControllerNumRows;
     } else if (section == kEHSectionIndexControllerToPresent) {
         numRows = kEHSectionControllerToPresentNumRows;
+    } else if (section == kEHSectionIndexPresentedController ||
+               section == kEHSectionIndexPresentingController) {
+        numRows = self.controllerInfo.count;
     }
 
     return numRows;
@@ -257,9 +300,15 @@ static NSString * const kEHCustomTransitionStyleString   = @"Custom Transition S
     } else if (indexPath.section == kEHSectionIndexControllerToPresent) {
         if (indexPath.row == kEHRowWrapInNavigationController) {
             reuseID = [EHBooleanSwitchCell reuseID];
+        } else if (indexPath.row == kEHRowPreferredContentSizeWidth ||
+                   indexPath.row == kEHRowPreferredContentSizeHeight) {
+            reuseID = [EHStepperCell reuseID];
         } else {
             reuseID = [EHNameValueChangeCell reuseID];
         }
+    } else if (indexPath.section == kEHSectionIndexPresentedController ||
+               indexPath.section == kEHSectionIndexPresentingController) {
+        reuseID = [EHNameValueDisplayCell reuseID];
     }
 
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:reuseID forIndexPath:indexPath];
@@ -268,6 +317,9 @@ static NSString * const kEHCustomTransitionStyleString   = @"Custom Transition S
     NSString *detailText = nil;
     BOOL cellOn = NO;
     NSInteger booleanCellTag = 0;
+    CGFloat stepperValue = 0.0;
+    NSInteger stepperCellTag = 0;
+    NSUInteger indentLevel = 0;
     if (indexPath.section == kEHSectionIndexThisController) {
         if (indexPath.row == kEHRowModalPresentationStyle) {
             text = kEHModalPresentationStyleString;
@@ -281,6 +333,14 @@ static NSString * const kEHCustomTransitionStyleString   = @"Custom Transition S
         } else if (indexPath.row == kEHRowCustomTransitionStyle) {
             text = kEHCustomTransitionStyleString;
             detailText = [self ourCustomTransitionStyle];
+        } else if (indexPath.row == kEHRowPreferredContentSizeWidth) {
+            text = kEHPreferredContentSizeWidthString;
+            CGSize size = [self ourPreferredContentSize];
+            detailText = [@(size.width) stringValue];
+        } else if (indexPath.row == kEHRowPreferredContentSizeHeight) {
+            text = kEHPreferredContentSizeHeightString;
+            CGSize size = [self ourPreferredContentSize];
+            detailText = [@(size.height) stringValue];
         } else if (indexPath.row == kEHRowDefinesPresentationContext) {
             text = @"Defines Presentation Context";
             cellOn = self.definesPresentationContext;
@@ -299,23 +359,53 @@ static NSString * const kEHCustomTransitionStyleString   = @"Custom Transition S
         } else if (indexPath.row == kEHRowCustomTransitionStyle) {
             text = kEHCustomTransitionStyleString;
             detailText = [self stringForCustomTransitionStyle:self.customTransitionStyleToUse];
+        } else if (indexPath.row == kEHRowPreferredContentSizeWidth) {
+            text = kEHPreferredContentSizeWidthString;
+            stepperValue = self.preferredContentSizeToUse.width;
+            stepperCellTag = kStepperCellTagPreferredContentSizeWidth;
+            detailText = [@(stepperValue) stringValue];
+        } else if (indexPath.row == kEHRowPreferredContentSizeHeight) {
+            text = kEHPreferredContentSizeHeightString;
+            stepperValue = self.preferredContentSizeToUse.height;
+            stepperCellTag = kStepperCellTagPreferredContentSizeHeight;
+            detailText = [@(stepperValue) stringValue];
         } else if (indexPath.row == kEHRowWrapInNavigationController) {
             text = @"Wrap in UINavigationController";
             cellOn = YES;
             booleanCellTag = kBooleanCellTagWrapInNavigationController;
         }
+    } else if (indexPath.section == kEHSectionIndexPresentedController) {
+        EHControllerInfo *info = self.controllerInfo[indexPath.row];
+        text = info.viewController.description;
+        UIViewController *presented = info.viewController.presentedViewController;
+        detailText = (presented != nil ? presented.description : @"Not Presenting");
+        indentLevel = info.level;
+    } else if (indexPath.section == kEHSectionIndexPresentingController) {
+        EHControllerInfo *info = self.controllerInfo[indexPath.row];
+        text = info.viewController.description;
+        UIViewController *presenting = info.viewController.presentingViewController;
+        detailText = (presenting ? presenting.description : @"Not Presented");
+        indentLevel = info.level;
     }
 
     cell.textLabel.text = text;
     if (detailText.length > 0) {
         cell.detailTextLabel.text = detailText;
     }
+    cell.indentationLevel = indentLevel;
 
     if ([cell isKindOfClass:[EHBooleanSwitchCell class]]) {
         EHBooleanSwitchCell *switchCell = (EHBooleanSwitchCell *)cell;
         switchCell.on = cellOn;
         switchCell.tag = booleanCellTag;
         switchCell.delegate = self;
+    }
+
+    if ([cell isKindOfClass:[EHStepperCell class]]) {
+        EHStepperCell *stepperCell = (EHStepperCell *)cell;
+        stepperCell.value = stepperValue;
+        stepperCell.delegate = self;
+        stepperCell.tag = stepperCellTag;
     }
 
     return cell;
@@ -328,6 +418,10 @@ static NSString * const kEHCustomTransitionStyleString   = @"Custom Transition S
         title = @"This View Controller";
     } else if (section == kEHSectionIndexControllerToPresent) {
         title = @"View Controller to Present";
+    } else if (section == kEHSectionIndexPresentedController) {
+        title = @"Presented Controller";
+    } else if (section == kEHSectionIndexPresentingController) {
+        title = @"Presenting Controller";
     }
 
     return title;
@@ -405,6 +499,20 @@ static NSString * const kEHCustomTransitionStyleString   = @"Custom Transition S
     }
 }
 
+#pragma mark - EHStepperCellDelegate methods
+
+- (void)stepperCellValueDidChange:(EHStepperCell *)cell {
+    if (cell.tag == kStepperCellTagPreferredContentSizeWidth) {
+        self.preferredContentSizeToUse = CGSizeMake(cell.value, self.preferredContentSizeToUse.height);
+        [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:kEHRowPreferredContentSizeWidth inSection:kEHSectionIndexControllerToPresent]]
+                              withRowAnimation:UITableViewRowAnimationNone];
+    } else if (cell.tag == kStepperCellTagPreferredContentSizeHeight) {
+        self.preferredContentSizeToUse = CGSizeMake(self.preferredContentSizeToUse.width, cell.value);
+        [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:kEHRowPreferredContentSizeHeight inSection:kEHSectionIndexControllerToPresent]]
+                              withRowAnimation:UITableViewRowAnimationNone];
+    }
+}
+
 #pragma mark - EHSelectionTableViewControllerDelegate methods
 
 - (void)selectionTableViewControllerDidChangeSelection:(EHSelectionTableViewController *)controller {
@@ -418,8 +526,12 @@ static NSString * const kEHCustomTransitionStyleString   = @"Custom Transition S
     if (controller.tag == kSelectionControllerTagModalPresentationStyle) {
         UIModalPresentationStyle styleData = [selectedOption.data integerValue];
         self.modalPresentationStyleToUse = styleData;
-        [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:kEHRowModalPresentationStyle inSection:kEHSectionIndexControllerToPresent]]
-                              withRowAnimation:UITableViewRowAnimationNone];
+        UIScreen *mainScreen = [UIScreen mainScreen];
+        self.preferredContentSizeToUse = mainScreen.bounds.size;
+        NSArray *indexPathsToReload = @[[NSIndexPath indexPathForRow:kEHRowModalPresentationStyle inSection:kEHSectionIndexControllerToPresent],
+                                        [NSIndexPath indexPathForRow:kEHRowPreferredContentSizeWidth inSection:kEHSectionIndexControllerToPresent],
+                                        [NSIndexPath indexPathForRow:kEHRowPreferredContentSizeHeight inSection:kEHSectionIndexControllerToPresent]];
+        [self.tableView reloadRowsAtIndexPaths:indexPathsToReload withRowAnimation:UITableViewRowAnimationNone];
     } else if (controller.tag == kSelectionControllerTagModalTransitionStyle) {
         UIModalTransitionStyle styleData = [selectedOption.data integerValue];
         self.modalTransitionStyleToUse = styleData;
@@ -428,8 +540,11 @@ static NSString * const kEHCustomTransitionStyleString   = @"Custom Transition S
     } else if (controller.tag == kSelectionControllerTagCustomPresentationStyle) {
         EHCustomPresentationStyle styleData = [selectedOption.data integerValue];
         self.customPresentationStyleToUse = styleData;
-        [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:kEHRowCustomPresentationStyle inSection:kEHSectionIndexControllerToPresent]]
-                              withRowAnimation:UITableViewRowAnimationNone];
+        self.preferredContentSizeToUse = [self defaultPreferredContentSizeForCustomPresentationStyle:self.customPresentationStyleToUse];
+        NSArray *indexPathsToReload = @[[NSIndexPath indexPathForRow:kEHRowCustomPresentationStyle inSection:kEHSectionIndexControllerToPresent],
+                                        [NSIndexPath indexPathForRow:kEHRowPreferredContentSizeWidth inSection:kEHSectionIndexControllerToPresent],
+                                        [NSIndexPath indexPathForRow:kEHRowPreferredContentSizeHeight inSection:kEHSectionIndexControllerToPresent]];
+        [self.tableView reloadRowsAtIndexPaths:indexPathsToReload withRowAnimation:UITableViewRowAnimationNone];
     } else if (controller.tag == kSelectionControllerTagCustomTransitionStyle) {
         EHCustomTransitionStyle styleData = [selectedOption.data integerValue];
         self.customTransitionStyleToUse = styleData;
@@ -443,7 +558,6 @@ static NSString * const kEHCustomTransitionStyleString   = @"Custom Transition S
 - (void)presentButtonTapped:(id)sender {
     // Present another color controller, but this time full-screen
     EHViewController *controller = [[EHViewController alloc] initWithStyle:UITableViewStyleGrouped];
-    controller.controllerIndex = self.controllerIndex + 1;
 
     UIViewController<EHCustomTransitionViewController> *controllerToPresent = controller;
     if (self.shouldWrapInNavigationController) {
@@ -455,6 +569,8 @@ static NSString * const kEHCustomTransitionStyleString   = @"Custom Transition S
     controllerToPresent.modalTransitionStyle    = self.modalTransitionStyleToUse;
     controllerToPresent.customPresentationStyle = self.customPresentationStyleToUse;
     controllerToPresent.customTransitionStyle   = self.customTransitionStyleToUse;
+//    controllerToPresent.preferredContentSize    = self.preferredContentSizeToUse;
+    controller.preferredContentSize             = self.preferredContentSizeToUse;
 
     controllerToPresent.transitioningDelegate  = (controllerToPresent.modalPresentationStyle == UIModalPresentationCustom ? self : nil);
 
@@ -465,7 +581,6 @@ static NSString * const kEHCustomTransitionStyleString   = @"Custom Transition S
 
 - (void)pushButtonTapped:(id)sender {
     EHViewController *controller = [[EHViewController alloc] initWithStyle:UITableViewStyleGrouped];
-    controller.controllerIndex = self.controllerIndex + 1;
 
     [self.navigationController pushViewController:controller animated:YES];
 }
@@ -708,6 +823,58 @@ static NSString * const kEHCustomTransitionStyleString   = @"Custom Transition S
     }
 
     return animator;
+}
+
+- (CGSize)ourPreferredContentSize {
+    CGSize size = self.preferredContentSize;
+    if (self.navigationController != nil) {
+        size = self.navigationController.preferredContentSize;
+    }
+
+    return size;
+}
+
+- (CGSize)defaultPreferredContentSizeForCustomPresentationStyle:(EHCustomPresentationStyle)style {
+    CGSize defaultSize = CGSizeZero;
+
+    if (style == EHCustomPresentationStyleFullScreen) {
+        defaultSize = [EHFullScreenPresentationController defaultPresentedSizeForViewController:self];
+    } else if (style == EHCustomPresentationStyleCustomSizeDimmedBackground) {
+        defaultSize = [EHDimPresentationController defaultPresentedSizeForViewController:self];
+    } else if (style == EHCustomPresentationStyleCustomSizeBlurredBackground) {
+        defaultSize = [EHBlurPresentationController defaultPresentedSizeForViewController:self];
+    }
+
+    return defaultSize;
+}
+
++ (NSArray *)viewControllerInfo {
+    NSMutableArray *tmpInfo = [NSMutableArray array];
+
+    // Save the info for the root view controller
+    UIApplication *application = [UIApplication sharedApplication];
+    UIViewController *viewController = application.keyWindow.rootViewController;
+    [EHViewController addInfoToArray:tmpInfo forController:viewController atLevel:0];
+
+    // Now handle the presnted controller chain
+    while (viewController.presentedViewController != nil) {
+        UIViewController *presentedController = viewController.presentedViewController;
+        [EHViewController addInfoToArray:tmpInfo forController:presentedController atLevel:0];
+        viewController = presentedController;
+    }
+
+    return [NSArray arrayWithArray:tmpInfo];
+}
+
++ (void)addInfoToArray:(NSMutableArray *)array forController:(UIViewController *)controller atLevel:(NSUInteger)level {
+    EHControllerInfo *info = [EHControllerInfo infoWithController:controller level:level];
+    [array addObject:info];
+
+    NSUInteger nextLevel = level + 1;
+    NSArray *childViewControllers = controller.childViewControllers;
+    for (UIViewController *childViewController in childViewControllers) {
+        [EHViewController addInfoToArray:array forController:childViewController atLevel:nextLevel];
+    }
 }
 
 @end

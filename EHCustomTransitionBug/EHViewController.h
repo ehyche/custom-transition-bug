@@ -11,6 +11,4 @@
 
 @interface EHViewController : UITableViewController <EHCustomTransitionViewController>
 
-@property(nonatomic, assign) NSUInteger controllerIndex;
-
 @end

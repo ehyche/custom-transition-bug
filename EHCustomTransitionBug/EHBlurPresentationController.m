@@ -29,6 +29,18 @@ static CGFloat const kEHBlurPresentationControllerMinimumMargin = 20.0;
     return EHCustomPresentationStyleCustomSizeBlurredBackground;
 }
 
++ (CGSize)defaultPresentedSizeForViewController:(UIViewController *)controller {
+    CGSize defaultSize = CGSizeZero;
+
+    if (controller.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular) {
+        defaultSize = CGSizeMake(kEHBlurPresentationControllerDefaultWidthRegular, kEHBlurPresentationControllerDefaultHeightRegular);
+    } else if (controller.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact) {
+        defaultSize = CGSizeMake(kEHBlurPresentationControllerDefaultWidthCompact, kEHBlurPresentationControllerDefaultHeightCompact);
+    }
+
+    return defaultSize;
+}
+
 #pragma mark - UIPresentationController methods
 
 - (instancetype)initWithPresentedViewController:(UIViewController *)presentedViewController
