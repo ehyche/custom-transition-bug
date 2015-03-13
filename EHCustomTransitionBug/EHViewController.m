@@ -15,7 +15,7 @@
 #import "EHBooleanSwitchCell.h"
 #import "EHNameValueDisplayCell.h"
 #import "EHNameValueChangeCell.h"
-#import "EHStepperCell.h"
+#import "EHTextFieldCell.h"
 #import "EHSelectionOption.h"
 #import "EHSelectionTableViewController.h"
 #import "EHNavigationController.h"
@@ -37,21 +37,42 @@ NSInteger const kEHSectionIndexControllerToPresent = 1;
 NSInteger const kEHSectionIndexPresentedController = 2;
 NSInteger const kEHSectionIndexPresentingController = 3;
 
-NSInteger const kEHSectionCount = 4;
-NSInteger const kEHSectionThisControllerNumRows = 7;
-NSInteger const kEHSectionControllerToPresentNumRows = 7;
+CGFloat const kEHPickerViewHeight = 100.0;
+CGFloat const kEHPickerComponentWidth = 100.0;
+CGFloat const kEHPickerToolbarHeight = 44.0;
 
-// These are common to both sections
-NSInteger const kEHRowModalPresentationStyle = 0;
-NSInteger const kEHRowModalTransitionStyle = 1;
-NSInteger const kEHRowCustomPresentationStyle = 2;
-NSInteger const kEHRowCustomTransitionStyle = 3;
-NSInteger const kEHRowPreferredContentSizeWidth = 4;
-NSInteger const kEHRowPreferredContentSizeHeight = 5;
-// These are rows specific to the This Controller section
-NSInteger const kEHRowDefinesPresentationContext = 6;
-// These are rows specific to the Controller To Present section
-NSInteger const kEHRowWrapInNavigationController = 6;
+NSInteger const kEHPickerMinWidth  =  100;
+NSInteger const kEHPickerMaxWidth  =  768;
+NSInteger const kEHPickerMinHeight =  100;
+NSInteger const kEHPickerMaxHeight = 1024;
+
+NSInteger const kEHPickerDefaultWidth  = 436;
+NSInteger const kEHPickerDefaultHeight = 650;
+
+CGFloat const kEHDefaultPreferredContentSizeWidth  =  768.0;
+CGFloat const kEHDefaultPreferredContentSizeHeight = 1024.0;
+
+typedef NS_ENUM(NSUInteger, kEHThisRowIndex) {
+    kEHThisRowIndexModalPresentationStyle,
+    kEHThisRowIndexModalTransitionStyle,
+    kEHThisRowIndexCustomPresentationStyle,
+    kEHThisRowIndexCustomTransitionStyle,
+    kEHThisRowIndexPreferredContentSize,
+    kEHThisRowIndexDefinesPresentationContext,
+    kEHThisRowIndexCount
+};
+
+typedef NS_ENUM(NSUInteger, kEHToPresentRowIndex) {
+    kEHToPresentRowIndexModalPresentationStyle,
+    kEHToPresentRowIndexModalTransitionStyle,
+    kEHToPresentRowIndexCustomPresentationStyle,
+    kEHToPresentRowIndexCustomTransitionStyle,
+    kEHToPresentRowIndexPreferredContentSize,
+    kEHToPresentRowIndexWrapInNavController,
+    kEHToPresentRowIndexCount
+};
+
+NSInteger const kEHSectionCount = 4;
 
 CGFloat const kButtonHeight = 44.0;
 CGFloat const kButtonPadding = 5.0;
@@ -70,16 +91,17 @@ NSInteger const kSelectionControllerTagCustomTransitionStyle   = 203;
 CGFloat const kPreferredContentWidthDefaultFormSheet = 540.0;
 CGFloat const kPreferredContentHeightDefaultFormSheet = 620.0;
 
-static NSString * const kEHModalPresentationStyleString     = @"UIModalPresentationStyle";
-static NSString * const kEHModalTransitionStyleString       = @"UIModalTransitionStyle";
-static NSString * const kEHCustomPresentationStyleString    = @"Custom Presentation Style";
-static NSString * const kEHCustomTransitionStyleString      = @"Custom Transition Style";
-static NSString * const kEHPreferredContentSizeWidthString  = @"Preferred Content Size Width";
-static NSString * const kEHPreferredContentSizeHeightString = @"Preferred Content Size Height";
+static NSString * const kEHModalPresentationStyleString  = @"UIModalPresentationStyle";
+static NSString * const kEHModalTransitionStyleString    = @"UIModalTransitionStyle";
+static NSString * const kEHCustomPresentationStyleString = @"Custom Presentation Style";
+static NSString * const kEHCustomTransitionStyleString   = @"Custom Transition Style";
+static NSString * const kEHPreferredContentSizeString    = @"Preferred Content Size";
 
 @interface EHViewController() <UIViewControllerTransitioningDelegate,
+                               UITextFieldDelegate,
+                               UIPickerViewDataSource,
+                               UIPickerViewDelegate,
                                EHBooleanSwitchCellDelegate,
-                               EHStepperCellDelegate,
                                EHSelectionTableViewControllerDelegate>
 
 @property(nonatomic, assign) NSUInteger controllerIndex;
@@ -92,6 +114,9 @@ static NSString * const kEHPreferredContentSizeHeightString = @"Preferred Conten
 @property(nonatomic, copy)   NSArray *modalTransitionStyles;
 @property(nonatomic, copy)   NSArray *customPresentationStyles;
 @property(nonatomic, copy)   NSArray *customTransitionStyles;
+@property(nonatomic, strong) UIPickerView *pickerView;
+@property(nonatomic, strong) UIToolbar *pickerToolbar;
+@property(nonatomic, weak) UITextField *textField;
 
 @property(nonatomic, assign) UIModalPresentationStyle  modalPresentationStyleToUse;
 @property(nonatomic, assign) UIModalTransitionStyle    modalTransitionStyleToUse;
@@ -201,9 +226,28 @@ static NSString * const kEHPreferredContentSizeHeightString = @"Preferred Conten
     [super viewDidLoad];
 
     [self.tableView registerClass:[EHBooleanSwitchCell class]    forCellReuseIdentifier:[EHBooleanSwitchCell reuseID]];
-    [self.tableView registerClass:[EHStepperCell class]          forCellReuseIdentifier:[EHStepperCell reuseID]];
     [self.tableView registerClass:[EHNameValueDisplayCell class] forCellReuseIdentifier:[EHNameValueDisplayCell reuseID]];
     [self.tableView registerClass:[EHNameValueChangeCell class]  forCellReuseIdentifier:[EHNameValueChangeCell reuseID]];
+    [self.tableView registerClass:[EHTextFieldCell class]        forCellReuseIdentifier:[EHTextFieldCell reuseID]];
+
+    CGRect pickerViewFrame = CGRectMake(0.0, 0.0, self.view.frame.size.width, kEHPickerViewHeight);
+    self.pickerView = [[UIPickerView alloc] initWithFrame:pickerViewFrame];
+    self.pickerView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    self.pickerView.delegate = self;
+    self.pickerView.dataSource = self;
+    [self.pickerView reloadAllComponents];
+
+    CGRect pickerToolbarFrame = CGRectMake(0.0, 0.0, self.view.frame.size.width, kEHPickerToolbarHeight);
+    self.pickerToolbar = [[UIToolbar alloc] initWithFrame:pickerToolbarFrame];
+    self.pickerToolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    UIBarButtonItem *flexibleItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                                                                                  target:nil
+                                                                                  action:NULL];
+    UIBarButtonItem *doneBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                                                       target:self
+                                                                                       action:@selector(pickerDoneButtonTapped:)];
+    self.pickerToolbar.items = @[flexibleItem, doneBarButtonItem];
+
 
     // Init the parameters to the same as this controller
     if (self.presentingViewController != nil) {
@@ -218,13 +262,16 @@ static NSString * const kEHPreferredContentSizeHeightString = @"Preferred Conten
         self.customPresentationStyleToUse = EHCustomPresentationStyleFullScreen;
         self.customTransitionStyleToUse = EHCustomTransitionStyleCoverVertical;
     }
+
+    self.shouldWrapInNavigationController = (self.navigationController != nil);
+    self.preferredContentSizeToUse        = [self ourPreferredContentSize];
+    if (CGSizeEqualToSize(self.preferredContentSizeToUse, CGSizeZero)) {
+        self.preferredContentSizeToUse = CGSizeMake(kEHDefaultPreferredContentSizeWidth, kEHDefaultPreferredContentSizeHeight);
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-
-    self.shouldWrapInNavigationController = (self.navigationController != nil);
-    self.preferredContentSizeToUse        = [self ourPreferredContentSize];
 
     if (self.navigationController != nil) {
         // Set the title
@@ -279,9 +326,9 @@ static NSString * const kEHPreferredContentSizeHeightString = @"Preferred Conten
     NSInteger numRows = 0;
 
     if (section == kEHSectionIndexThisController) {
-        numRows = kEHSectionThisControllerNumRows;
+        numRows = kEHThisRowIndexCount;
     } else if (section == kEHSectionIndexControllerToPresent) {
-        numRows = kEHSectionControllerToPresentNumRows;
+        numRows = kEHToPresentRowIndexCount;
     } else if (section == kEHSectionIndexPresentedController ||
                section == kEHSectionIndexPresentingController) {
         numRows = self.controllerInfo.count;
@@ -293,17 +340,16 @@ static NSString * const kEHPreferredContentSizeHeightString = @"Preferred Conten
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSString *reuseID = nil;
     if (indexPath.section == kEHSectionIndexThisController) {
-        if (indexPath.row == kEHRowDefinesPresentationContext) {
+        if (indexPath.row == kEHThisRowIndexDefinesPresentationContext) {
             reuseID = [EHBooleanSwitchCell reuseID];
         } else {
             reuseID = [EHNameValueDisplayCell reuseID];
         }
     } else if (indexPath.section == kEHSectionIndexControllerToPresent) {
-        if (indexPath.row == kEHRowWrapInNavigationController) {
+        if (indexPath.row == kEHToPresentRowIndexWrapInNavController) {
             reuseID = [EHBooleanSwitchCell reuseID];
-        } else if (indexPath.row == kEHRowPreferredContentSizeWidth ||
-                   indexPath.row == kEHRowPreferredContentSizeHeight) {
-            reuseID = [EHStepperCell reuseID];
+        } else if (indexPath.row == kEHToPresentRowIndexPreferredContentSize) {
+            reuseID = [EHTextFieldCell reuseID];
         } else {
             reuseID = [EHNameValueChangeCell reuseID];
         }
@@ -318,59 +364,46 @@ static NSString * const kEHPreferredContentSizeHeightString = @"Preferred Conten
     NSString *detailText = nil;
     BOOL cellOn = NO;
     NSInteger booleanCellTag = 0;
-    CGFloat stepperValue = 0.0;
-    NSInteger stepperCellTag = 0;
     NSUInteger indentLevel = 0;
     if (indexPath.section == kEHSectionIndexThisController) {
-        if (indexPath.row == kEHRowModalPresentationStyle) {
+        if (indexPath.row == kEHThisRowIndexModalPresentationStyle) {
             text = kEHModalPresentationStyleString;
             detailText = [self ourModalPresentationStyle];
-        } else if (indexPath.row == kEHRowModalTransitionStyle) {
+        } else if (indexPath.row == kEHThisRowIndexModalTransitionStyle) {
             text = kEHModalTransitionStyleString;
             detailText = [self ourModalTransitionStyle];
-        } else if (indexPath.row == kEHRowCustomPresentationStyle) {
+        } else if (indexPath.row == kEHThisRowIndexCustomPresentationStyle) {
             text = kEHCustomPresentationStyleString;
             detailText = [self ourCustomPresentationStyle];
-        } else if (indexPath.row == kEHRowCustomTransitionStyle) {
+        } else if (indexPath.row == kEHThisRowIndexCustomTransitionStyle) {
             text = kEHCustomTransitionStyleString;
             detailText = [self ourCustomTransitionStyle];
-        } else if (indexPath.row == kEHRowPreferredContentSizeWidth) {
-            text = kEHPreferredContentSizeWidthString;
+        } else if (indexPath.row == kEHThisRowIndexPreferredContentSize) {
+            text = kEHPreferredContentSizeString;
             CGSize size = [self ourPreferredContentSize];
-            detailText = [@(size.width) stringValue];
-        } else if (indexPath.row == kEHRowPreferredContentSizeHeight) {
-            text = kEHPreferredContentSizeHeightString;
-            CGSize size = [self ourPreferredContentSize];
-            detailText = [@(size.height) stringValue];
-        } else if (indexPath.row == kEHRowDefinesPresentationContext) {
+            detailText = NSStringFromCGSize(size);
+        } else if (indexPath.row == kEHThisRowIndexDefinesPresentationContext) {
             text = @"Defines Presentation Context";
             cellOn = self.definesPresentationContext;
             booleanCellTag = kBooleanCellTagDefinesPresentationContext;
         }
     } else if (indexPath.section == kEHSectionIndexControllerToPresent) {
-        if (indexPath.row == kEHRowModalPresentationStyle) {
+        if (indexPath.row == kEHToPresentRowIndexModalPresentationStyle) {
             text = kEHModalPresentationStyleString;
             detailText = [self stringForModalPresentationStyle:self.modalPresentationStyleToUse];
-        } else if (indexPath.row == kEHRowModalTransitionStyle) {
+        } else if (indexPath.row == kEHToPresentRowIndexModalTransitionStyle) {
             text = kEHModalTransitionStyleString;
             detailText = [self stringForModalTransitionStyle:self.modalTransitionStyleToUse];
-        } else if (indexPath.row == kEHRowCustomPresentationStyle) {
+        } else if (indexPath.row == kEHToPresentRowIndexCustomPresentationStyle) {
             text = kEHCustomPresentationStyleString;
             detailText = [self stringForCustomPresentationStyle:self.customPresentationStyleToUse];
-        } else if (indexPath.row == kEHRowCustomTransitionStyle) {
+        } else if (indexPath.row == kEHToPresentRowIndexCustomTransitionStyle) {
             text = kEHCustomTransitionStyleString;
             detailText = [self stringForCustomTransitionStyle:self.customTransitionStyleToUse];
-        } else if (indexPath.row == kEHRowPreferredContentSizeWidth) {
-            text = kEHPreferredContentSizeWidthString;
-            stepperValue = self.preferredContentSizeToUse.width;
-            stepperCellTag = kStepperCellTagPreferredContentSizeWidth;
-            detailText = [@(stepperValue) stringValue];
-        } else if (indexPath.row == kEHRowPreferredContentSizeHeight) {
-            text = kEHPreferredContentSizeHeightString;
-            stepperValue = self.preferredContentSizeToUse.height;
-            stepperCellTag = kStepperCellTagPreferredContentSizeHeight;
-            detailText = [@(stepperValue) stringValue];
-        } else if (indexPath.row == kEHRowWrapInNavigationController) {
+        } else if (indexPath.row == kEHToPresentRowIndexPreferredContentSize) {
+            text = kEHPreferredContentSizeString;
+            detailText = NSStringFromCGSize(self.preferredContentSizeToUse);
+        } else if (indexPath.row == kEHToPresentRowIndexWrapInNavController) {
             text = @"Wrap in UINavigationController";
             cellOn = YES;
             booleanCellTag = kBooleanCellTagWrapInNavigationController;
@@ -402,11 +435,13 @@ static NSString * const kEHPreferredContentSizeHeightString = @"Preferred Conten
         switchCell.delegate = self;
     }
 
-    if ([cell isKindOfClass:[EHStepperCell class]]) {
-        EHStepperCell *stepperCell = (EHStepperCell *)cell;
-        stepperCell.value = stepperValue;
-        stepperCell.delegate = self;
-        stepperCell.tag = stepperCellTag;
+    if ([cell isKindOfClass:[EHTextFieldCell class]]) {
+        EHTextFieldCell *textFieldCell = (EHTextFieldCell *)cell;
+        textFieldCell.textField.delegate = self;
+        textFieldCell.textField.text = detailText;
+        textFieldCell.detailTextLabel.text = detailText;
+        textFieldCell.textField.inputView = self.pickerView;
+        textFieldCell.textField.inputAccessoryView = self.pickerToolbar;
     }
 
     return cell;
@@ -435,16 +470,16 @@ static NSString * const kEHPreferredContentSizeHeightString = @"Preferred Conten
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
     if (indexPath.section == kEHSectionIndexControllerToPresent) {
-        if (indexPath.row == kEHRowModalPresentationStyle) {
+        if (indexPath.row == kEHToPresentRowIndexModalPresentationStyle) {
             // Let the user choose a modal presentation style
             [self showModalPresentationStylesSelectionController];
-        } else if (indexPath.row == kEHRowModalTransitionStyle) {
+        } else if (indexPath.row == kEHToPresentRowIndexModalTransitionStyle) {
             // Let the user choose a modal transition style
             [self showModalTransitionStylesSelectionController];
-        } else if (indexPath.row == kEHRowCustomPresentationStyle) {
+        } else if (indexPath.row == kEHToPresentRowIndexCustomPresentationStyle) {
             // Let the user choose a custom presentation style
             [self showCustomPresentationStylesSelectionController];
-        } else if (indexPath.row == kEHRowCustomTransitionStyle) {
+        } else if (indexPath.row == kEHToPresentRowIndexCustomTransitionStyle) {
             // Let the user choose the custom transition style
             [self showCustomTransitionStyleSelectionController];
         }
@@ -489,6 +524,82 @@ static NSString * const kEHPreferredContentSizeHeightString = @"Preferred Conten
     return controller;
 }
 
+#pragma mark - UITextFieldDelegate methods
+
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
+    self.textField = textField;
+
+    // Parse the text field. It should be (width,height).
+    NSArray *components = [textField.text componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"{,}"]];
+    NSMutableArray *nonZeroLengthComponents = [NSMutableArray array];
+    for (NSString *component in components) {
+        if (component.length > 0) {
+            [nonZeroLengthComponents addObject:component];
+        }
+    }
+
+    // Width should be the first, Height the 2nd
+    NSInteger width = 0;
+    NSInteger height = 0;
+    if (nonZeroLengthComponents.count > 0) {
+        NSString *firstStr = nonZeroLengthComponents.firstObject;
+        width = [firstStr integerValue];
+    }
+    if (nonZeroLengthComponents.count > 1) {
+        NSString *secondStr = nonZeroLengthComponents[1];
+        height = [secondStr integerValue];
+    }
+
+    width = MAX(width, kEHPickerMinWidth);
+    width = MIN(width, kEHPickerMaxWidth);
+
+    height = MAX(height, kEHPickerMinHeight);
+    height = MIN(height, kEHPickerMaxHeight);
+
+    // Compute the width index and height index
+    NSInteger widthIndex = width - kEHPickerMinWidth;
+    NSInteger heightIndex = height - kEHPickerMinHeight;
+
+    // Set the picker to these rows
+    [self.pickerView selectRow:widthIndex inComponent:0 animated:NO];
+    [self.pickerView selectRow:heightIndex inComponent:1 animated:NO];
+
+    return YES;
+}
+
+- (void)textFieldDidEndEditing:(UITextField *)textField {
+    self.textField = nil;
+}
+
+#pragma mark - UIPickerViewDataSource methods
+
+- (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView {
+    return 2;
+}
+
+- (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component {
+    NSInteger numRows = 0;
+
+    if (component == 0) {
+        numRows = kEHPickerMaxWidth - kEHPickerMinWidth + 1;
+    } else {
+        numRows = kEHPickerMaxHeight - kEHPickerMinHeight + 1;
+    }
+
+    return numRows;
+}
+
+#pragma mark - UIPickerViewDelegate methods
+
+- (CGFloat)pickerView:(UIPickerView *)pickerView widthForComponent:(NSInteger)component {
+    return kEHPickerComponentWidth;
+}
+
+- (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component {
+    NSInteger minValue = (component == 0 ? kEHPickerMinWidth : kEHPickerMinHeight);
+    NSInteger rowValue = minValue + row;
+    return [@(rowValue) stringValue];
+}
 
 #pragma mark - EHBooleanSwitchCellDelegate methods
 
@@ -497,20 +608,6 @@ static NSString * const kEHPreferredContentSizeHeightString = @"Preferred Conten
         self.definesPresentationContext = cell.isOn;
     } else if (cell.tag == kBooleanCellTagWrapInNavigationController) {
         self.shouldWrapInNavigationController = cell.isOn;
-    }
-}
-
-#pragma mark - EHStepperCellDelegate methods
-
-- (void)stepperCellValueDidChange:(EHStepperCell *)cell {
-    if (cell.tag == kStepperCellTagPreferredContentSizeWidth) {
-        self.preferredContentSizeToUse = CGSizeMake(cell.value, self.preferredContentSizeToUse.height);
-        [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:kEHRowPreferredContentSizeWidth inSection:kEHSectionIndexControllerToPresent]]
-                              withRowAnimation:UITableViewRowAnimationNone];
-    } else if (cell.tag == kStepperCellTagPreferredContentSizeHeight) {
-        self.preferredContentSizeToUse = CGSizeMake(self.preferredContentSizeToUse.width, cell.value);
-        [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:kEHRowPreferredContentSizeHeight inSection:kEHSectionIndexControllerToPresent]]
-                              withRowAnimation:UITableViewRowAnimationNone];
     }
 }
 
@@ -529,27 +626,25 @@ static NSString * const kEHPreferredContentSizeHeightString = @"Preferred Conten
         self.modalPresentationStyleToUse = styleData;
         UIScreen *mainScreen = [UIScreen mainScreen];
         self.preferredContentSizeToUse = mainScreen.bounds.size;
-        NSArray *indexPathsToReload = @[[NSIndexPath indexPathForRow:kEHRowModalPresentationStyle inSection:kEHSectionIndexControllerToPresent],
-                                        [NSIndexPath indexPathForRow:kEHRowPreferredContentSizeWidth inSection:kEHSectionIndexControllerToPresent],
-                                        [NSIndexPath indexPathForRow:kEHRowPreferredContentSizeHeight inSection:kEHSectionIndexControllerToPresent]];
+        NSArray *indexPathsToReload = @[[NSIndexPath indexPathForRow:kEHToPresentRowIndexModalPresentationStyle inSection:kEHSectionIndexControllerToPresent],
+                                        [NSIndexPath indexPathForRow:kEHToPresentRowIndexPreferredContentSize inSection:kEHSectionIndexControllerToPresent]];
         [self.tableView reloadRowsAtIndexPaths:indexPathsToReload withRowAnimation:UITableViewRowAnimationNone];
     } else if (controller.tag == kSelectionControllerTagModalTransitionStyle) {
         UIModalTransitionStyle styleData = [selectedOption.data integerValue];
         self.modalTransitionStyleToUse = styleData;
-        [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:kEHRowModalTransitionStyle inSection:kEHSectionIndexControllerToPresent]]
+        [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:kEHToPresentRowIndexModalTransitionStyle inSection:kEHSectionIndexControllerToPresent]]
                               withRowAnimation:UITableViewRowAnimationNone];
     } else if (controller.tag == kSelectionControllerTagCustomPresentationStyle) {
         EHCustomPresentationStyle styleData = [selectedOption.data integerValue];
         self.customPresentationStyleToUse = styleData;
         self.preferredContentSizeToUse = [self defaultPreferredContentSizeForCustomPresentationStyle:self.customPresentationStyleToUse];
-        NSArray *indexPathsToReload = @[[NSIndexPath indexPathForRow:kEHRowCustomPresentationStyle inSection:kEHSectionIndexControllerToPresent],
-                                        [NSIndexPath indexPathForRow:kEHRowPreferredContentSizeWidth inSection:kEHSectionIndexControllerToPresent],
-                                        [NSIndexPath indexPathForRow:kEHRowPreferredContentSizeHeight inSection:kEHSectionIndexControllerToPresent]];
+        NSArray *indexPathsToReload = @[[NSIndexPath indexPathForRow:kEHToPresentRowIndexCustomPresentationStyle inSection:kEHSectionIndexControllerToPresent],
+                                        [NSIndexPath indexPathForRow:kEHToPresentRowIndexPreferredContentSize inSection:kEHSectionIndexControllerToPresent]];
         [self.tableView reloadRowsAtIndexPaths:indexPathsToReload withRowAnimation:UITableViewRowAnimationNone];
     } else if (controller.tag == kSelectionControllerTagCustomTransitionStyle) {
         EHCustomTransitionStyle styleData = [selectedOption.data integerValue];
         self.customTransitionStyleToUse = styleData;
-        [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:kEHRowCustomTransitionStyle inSection:kEHSectionIndexControllerToPresent]]
+        [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:kEHToPresentRowIndexCustomTransitionStyle inSection:kEHSectionIndexControllerToPresent]]
                               withRowAnimation:UITableViewRowAnimationNone];
     }
 }
@@ -570,8 +665,7 @@ static NSString * const kEHPreferredContentSizeHeightString = @"Preferred Conten
     controllerToPresent.modalTransitionStyle    = self.modalTransitionStyleToUse;
     controllerToPresent.customPresentationStyle = self.customPresentationStyleToUse;
     controllerToPresent.customTransitionStyle   = self.customTransitionStyleToUse;
-//    controllerToPresent.preferredContentSize    = self.preferredContentSizeToUse;
-    controller.preferredContentSize             = self.preferredContentSizeToUse;
+    controllerToPresent.preferredContentSize    = self.preferredContentSizeToUse;
 
     controllerToPresent.transitioningDelegate  = (controllerToPresent.modalPresentationStyle == UIModalPresentationCustom ? self : nil);
 
@@ -590,6 +684,20 @@ static NSString * const kEHPreferredContentSizeHeightString = @"Preferred Conten
     if (self.presentingViewController != nil) {
         [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
     }
+}
+
+- (void)pickerDoneButtonTapped:(id)sender {
+    // Compute the selected width and height
+    NSInteger widthIndex = [self.pickerView selectedRowInComponent:0];
+    NSInteger heightIndex = [self.pickerView selectedRowInComponent:1];
+    CGFloat width = kEHPickerMinWidth + widthIndex;
+    CGFloat height = kEHPickerMinHeight + heightIndex;
+
+    self.preferredContentSizeToUse = CGSizeMake(width, height);
+    NSIndexPath *contentSizeIndexPath = [NSIndexPath indexPathForRow:kEHToPresentRowIndexPreferredContentSize inSection:kEHSectionIndexControllerToPresent];
+    [self.tableView reloadRowsAtIndexPaths:@[contentSizeIndexPath] withRowAnimation:UITableViewRowAnimationNone];
+
+    [self.textField resignFirstResponder];
 }
 
 - (NSString *)stringForModalPresentationStyle:(UIModalPresentationStyle)style {

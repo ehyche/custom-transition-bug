@@ -61,6 +61,7 @@
     [super viewWillAppear:animated];
 
     self.navigationItem.title = self.controllerTitle;
+    self.navigationItem.prompt = self.navigationController.description;
 }
 
 #pragma mark - UITableViewDataSource methods

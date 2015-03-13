@@ -31,6 +31,7 @@
 		FDAC4C241AAE7409004D3983 /* EHZoomInAnimationController.m in Sources */ = {isa = PBXBuildFile; fileRef = FDAC4C231AAE7409004D3983 /* EHZoomInAnimationController.m */; };
 		FDAC4C281AAE7A2D004D3983 /* EHCustomPresentationStyleInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = FDAC4C271AAE7A2D004D3983 /* EHCustomPresentationStyleInfo.m */; };
 		FDB330A11AB258C900F963B7 /* EHControllerCounter.m in Sources */ = {isa = PBXBuildFile; fileRef = FDB330A01AB258C900F963B7 /* EHControllerCounter.m */; };
+		FDB330A41AB2615500F963B7 /* EHTextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FDB330A31AB2615500F963B7 /* EHTextFieldCell.m */; };
 		FDBFCCB61AAF9FE2002B6B53 /* EHStepperCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FDBFCCB51AAF9FE2002B6B53 /* EHStepperCell.m */; };
 /* End PBXBuildFile section */
 
@@ -98,6 +99,8 @@
 		FDAC4C271AAE7A2D004D3983 /* EHCustomPresentationStyleInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EHCustomPresentationStyleInfo.m; sourceTree = "<group>"; };
 		FDB3309F1AB258C900F963B7 /* EHControllerCounter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EHControllerCounter.h; sourceTree = "<group>"; };
 		FDB330A01AB258C900F963B7 /* EHControllerCounter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EHControllerCounter.m; sourceTree = "<group>"; };
+		FDB330A21AB2615500F963B7 /* EHTextFieldCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EHTextFieldCell.h; sourceTree = "<group>"; };
+		FDB330A31AB2615500F963B7 /* EHTextFieldCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EHTextFieldCell.m; sourceTree = "<group>"; };
 		FDBFCCB41AAF9FE2002B6B53 /* EHStepperCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EHStepperCell.h; sourceTree = "<group>"; };
 		FDBFCCB51AAF9FE2002B6B53 /* EHStepperCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EHStepperCell.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -230,6 +233,8 @@
 				FD5E96321AAB6DC700C0AA9D /* EHNameValueChangeCell.m */,
 				FDBFCCB41AAF9FE2002B6B53 /* EHStepperCell.h */,
 				FDBFCCB51AAF9FE2002B6B53 /* EHStepperCell.m */,
+				FDB330A21AB2615500F963B7 /* EHTextFieldCell.h */,
+				FDB330A31AB2615500F963B7 /* EHTextFieldCell.m */,
 			);
 			name = "Table View Cells";
 			sourceTree = "<group>";
@@ -378,6 +383,7 @@
 				FD702A8A1AA96194003F4FAD /* EHCustomTransitionStyleInfo.m in Sources */,
 				FD75A26A1AA8AF12001363DA /* AppDelegate.m in Sources */,
 				FD1CF3031AAD5222004B2096 /* EHBlurPresentationController.m in Sources */,
+				FDB330A41AB2615500F963B7 /* EHTextFieldCell.m in Sources */,
 				FD74F3931AAD1A8D00D45EA1 /* EHNavigationController.m in Sources */,
 				FD75A2671AA8AF12001363DA /* main.m in Sources */,
 				FD702A8D1AA962B4003F4FAD /* EHSelectionTableViewController.m in Sources */,
