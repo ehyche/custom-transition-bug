@@ -232,6 +232,7 @@ static NSString * const kEHPreferredContentSizeString    = @"Preferred Content S
 
     CGRect pickerViewFrame = CGRectMake(0.0, 0.0, self.view.frame.size.width, kEHPickerViewHeight);
     self.pickerView = [[UIPickerView alloc] initWithFrame:pickerViewFrame];
+    self.pickerView.showsSelectionIndicator = YES;
     self.pickerView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     self.pickerView.delegate = self;
     self.pickerView.dataSource = self;
@@ -599,6 +600,17 @@ static NSString * const kEHPreferredContentSizeString    = @"Preferred Content S
     NSInteger minValue = (component == 0 ? kEHPickerMinWidth : kEHPickerMinHeight);
     NSInteger rowValue = minValue + row;
     return [@(rowValue) stringValue];
+}
+
+- (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
+    // Compute the selected width and height
+    NSInteger widthIndex = [self.pickerView selectedRowInComponent:0];
+    NSInteger heightIndex = [self.pickerView selectedRowInComponent:1];
+    CGFloat width = kEHPickerMinWidth + widthIndex;
+    CGFloat height = kEHPickerMinHeight + heightIndex;
+
+    self.preferredContentSizeToUse = CGSizeMake(width, height);
+    self.textField.text = NSStringFromCGSize(self.preferredContentSizeToUse);
 }
 
 #pragma mark - EHBooleanSwitchCellDelegate methods
